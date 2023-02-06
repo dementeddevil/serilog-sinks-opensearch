@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Authors>Michiel van Oudheusden, Martijn Laarman, Mogens Heller Grabe, Serilog Contributors</Authors>
+    <Title>Serilog.Sinks.Opensearch</Title>
+    <Description>Serilog sink for Opensearch</Description>
+    <Copyright>Copyright © Serilog Contributors 2023</Copyright>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyName>Serilog.Formatting.Opensearch</AssemblyName>
+    <AssemblyOriginatorKeyFile>../../assets/Serilog.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign>false</PublicSign>
+    <PackageId>Serilog.Formatting.Opensearch</PackageId>
+    <PackageTags>serilog;opensearch;logging;event;formatting</PackageTags>
+    <PackageReleaseNotes>https://github.com/serilog-contrib/serilog-sinks-opensearch/blob/master/CHANGES.md</PackageReleaseNotes>
+    <PackageIcon>serilog-sink-nuget.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/serilog-contrib/serilog-sinks-opensearch</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/serilog-contrib/serilog-sinks-opensearch</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RootNamespace>Serilog.Formatting.Opensearch</RootNamespace>
+  </PropertyGroup>
+    
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.12.0" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <None Include="..\..\assets\serilog-sink-nuget.png" Pack="true" Visible="false" PackagePath="" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+</Project>

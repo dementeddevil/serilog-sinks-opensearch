@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33312.197
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{148431F6-5BA9-4987-80CF-DF9F23F54947}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		CHANGES.md = CHANGES.md
+		LICENSE = LICENSE
+		nuget.config = nuget.config
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Sinks.Opensearch", "src\Serilog.Sinks.Opensearch\Serilog.Sinks.Opensearch.csproj", "{EEB0D119-687E-444E-BF14-9BDAEC9BA3EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Sinks.Opensearch.Tests", "test\Serilog.Sinks.Opensearch.Tests\Serilog.Sinks.Opensearch.Tests.csproj", "{CA358673-C4B6-49D0-8EC5-D6CB50A11CC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.Opensearch.Sample", "sample\Serilog.Sinks.Opensearch.Sample\Serilog.Sinks.Opensearch.Sample.csproj", "{253B37AB-D82E-4A5F-BA16-F1BE398818C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Formatting.Opensearch", "src\Serilog.Formatting.Opensearch\Serilog.Formatting.Opensearch.csproj", "{0E6D34BF-322A-4803-94D1-355F6D5024BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EEB0D119-687E-444E-BF14-9BDAEC9BA3EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEB0D119-687E-444E-BF14-9BDAEC9BA3EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEB0D119-687E-444E-BF14-9BDAEC9BA3EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEB0D119-687E-444E-BF14-9BDAEC9BA3EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA358673-C4B6-49D0-8EC5-D6CB50A11CC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA358673-C4B6-49D0-8EC5-D6CB50A11CC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA358673-C4B6-49D0-8EC5-D6CB50A11CC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA358673-C4B6-49D0-8EC5-D6CB50A11CC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{253B37AB-D82E-4A5F-BA16-F1BE398818C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{253B37AB-D82E-4A5F-BA16-F1BE398818C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{253B37AB-D82E-4A5F-BA16-F1BE398818C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{253B37AB-D82E-4A5F-BA16-F1BE398818C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E6D34BF-322A-4803-94D1-355F6D5024BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E6D34BF-322A-4803-94D1-355F6D5024BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E6D34BF-322A-4803-94D1-355F6D5024BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E6D34BF-322A-4803-94D1-355F6D5024BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2A076FF0-B90E-451A-B858-3144CE509516}
+	EndGlobalSection
+EndGlobal
