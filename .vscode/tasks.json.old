@@ -7,7 +7,7 @@
         {
             "taskName": "build",
             "args": [
-                "${workspaceRoot}/sample/Serilog.Sinks.Elasticsearch.Sample/Serilog.Sinks.Elasticsearch.Sample.csproj"
+                "${workspaceRoot}/sample/Serilog.Sinks.Opensearch.Sample/Serilog.Sinks.Opensearch.Sample.csproj"
             ],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"
