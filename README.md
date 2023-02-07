@@ -1,4 +1,4 @@
-# Serilog.Sinks.OpenSearch [![Continuous Integration](https://github.com/serilog-contrib/serilog-sinks-opensearch/actions/workflows/cicd.yaml/badge.svg?branch=dev)](https://github.com/serilog-contrib/serilog-sinks-opensearch/actions/workflows/cicd.yaml) [![NuGet Badge](https://img.shields.io/nuget/v/Serilog.Sinks.OpenSearch.svg)](https://www.nuget.org/packages/Serilog.Sinks.OpenSearch)
+# Serilog.Sinks.OpenSearch [![Continuous Integration](https://github.com/dementeddevil/serilog-sinks-opensearch/actions/workflows/cicd.yaml/badge.svg?branch=dev)](https://github.com/serilog-contrib/serilog-sinks-opensearch/actions/workflows/cicd.yaml) [![NuGet Badge](https://img.shields.io/nuget/v/Serilog.Sinks.OpenSearch.svg)](https://www.nuget.org/packages/Serilog.Sinks.OpenSearch)
 
 This repository contains two nuget packages: `Serilog.Sinks.OpenSearch` and `Serilog.Formatting.OpenSearch`.
 
@@ -178,12 +178,12 @@ var loggerConfig = new LoggerConfiguration()
 
 ## More information
 
-* [Basic information](https://github.com/serilog/serilog-sinks-opensearch/wiki/basic-setup) on how to configure and use this sink.
-* [Configuration options](https://github.com/serilog/serilog-sinks-opensearch/wiki/Configure-the-sink) which you can use.
-* How to use the [durability](https://github.com/serilog/serilog-sinks-opensearch/wiki/durability) mode.
+* [Basic information](https://github.com/dementeddevil/serilog-sinks-opensearch/wiki/basic-setup) on how to configure and use this sink.
+* [Configuration options](https://github.com/dementeddevil/serilog-sinks-opensearch/wiki/Configure-the-sink) which you can use.
+* How to use the [durability](https://github.com/dementeddevil/serilog-sinks-opensearch/wiki/durability) mode.
 * Get the [NuGet package](http://www.nuget.org/packages/Serilog.Sinks.OpenSearch).
-* Report issues to the [issue tracker](https://github.com/serilog/serilog-sinks-opensearch/issues). PR welcome, but please do this against the dev branch.
-* For an overview of recent changes, have a look at the [change log](https://github.com/serilog/serilog-sinks-opensearch/blob/master/CHANGES.md).
+* Report issues to the [issue tracker](https://github.com/dementeddevil/serilog-sinks-opensearch/issues). PR welcome, but please do this against the dev branch.
+* For an overview of recent changes, have a look at the [change log](https://github.com/dementeddevil/serilog-sinks-opensearch/blob/master/CHANGES.md).
 
 ### A note about fields inside OpenSearch
 
