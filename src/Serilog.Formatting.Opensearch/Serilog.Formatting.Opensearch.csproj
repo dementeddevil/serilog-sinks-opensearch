@@ -16,11 +16,11 @@
     <PublicSign>false</PublicSign>
     <PackageId>Serilog.Formatting.OpenSearch</PackageId>
     <PackageTags>serilog;opensearch;logging;event;formatting</PackageTags>
-    <PackageReleaseNotes>https://github.com/serilog-contrib/serilog-sinks-opensearch/blob/master/CHANGES.md</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/dementeddevil/serilog-sinks-opensearch/blob/master/CHANGES.md</PackageReleaseNotes>
     <PackageIcon>serilog-sink-nuget.png</PackageIcon>
-    <PackageProjectUrl>https://github.com/serilog-contrib/serilog-sinks-opensearch</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/dementeddevil/serilog-sinks-opensearch</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/serilog-contrib/serilog-sinks-opensearch</RepositoryUrl>
+    <RepositoryUrl>https://github.com/dementeddevil/serilog-sinks-opensearch</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RootNamespace>Serilog.Formatting.OpenSearch</RootNamespace>
   </PropertyGroup>
