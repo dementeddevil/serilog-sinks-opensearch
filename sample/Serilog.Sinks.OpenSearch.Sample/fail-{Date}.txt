@@ -1,0 +1,4 @@
+{"Timestamp":"2023-02-06T17:06:48.7165364+00:00","Level":"Information","MessageTemplate":"Hello, world!"}
+{"Timestamp":"2023-02-06T17:06:48.7334448+00:00","Level":"Debug","MessageTemplate":"Dividing {A} by {B}","Properties":{"A":10,"B":0}}
+{"Timestamp":"2023-02-06T17:06:48.7552336+00:00","Level":"Error","MessageTemplate":"Something went wrong","Exception":"System.DivideByZeroException: Attempted to divide by zero.\r\n   at Serilog.Sinks.OpenSearch.Sample.Program.Main(String[] args) in C:\\Projects\\Playground\\serilog-sinks-opensearch\\sample\\Serilog.Sinks.OpenSearch.Sample\\Program.cs:line 57"}
+{"Timestamp":"2023-02-06T17:06:48.7587284+00:00","Level":"Debug","MessageTemplate":"Reusing {A} by {B}","Properties":{"A":"string","B":true}}

@@ -3,15 +3,15 @@ using System;
 using OpenSearch.Net;
 using Serilog.Debugging;
 
-namespace Serilog.Sinks.Opensearch.Sinks.Opensearch
+namespace Serilog.Sinks.OpenSearch.Sinks.OpenSearch
 {
     /// <summary>
-    /// Encapsulates detection of Opensearch version
-    /// and fallback in case of detection failiure.
+    /// Encapsulates detection of OpenSearch version
+    /// and fallback in case of detection failure.
     /// </summary>
-    internal class OpensearchVersionManager
+    internal class OpenSearchVersionManager
     {
-        private readonly bool _detectOpensearchVersion;
+        private readonly bool _detectOpenSearchVersion;
         private readonly IOpenSearchLowLevelClient _client;
 
         /// <summary>
@@ -21,11 +21,11 @@ namespace Serilog.Sinks.Opensearch.Sinks.Opensearch
         public Version? DetectedVersion { get; private set; }
         public bool DetectionAttempted { get; private set; }
 
-        public OpensearchVersionManager(
-            bool detectOpensearchVersion,
+        public OpenSearchVersionManager(
+            bool detectOpenSearchVersion,
             IOpenSearchLowLevelClient client)
         {
-            _detectOpensearchVersion = detectOpensearchVersion;
+            _detectOpenSearchVersion = detectOpenSearchVersion;
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
@@ -36,7 +36,7 @@ namespace Serilog.Sinks.Opensearch.Sinks.Opensearch
                 if (DetectedVersion is not null)
                     return DetectedVersion;
 
-                if (_detectOpensearchVersion == false
+                if (_detectOpenSearchVersion == false
                     || DetectionAttempted == true)
                     return DefaultVersion;
 
@@ -62,8 +62,18 @@ namespace Serilog.Sinks.Opensearch.Sinks.Opensearch
                 if (discoveredVersion.Value is not string strVersion)
                     return null;
 
-                return new Version(strVersion);
+                var version = new Version(strVersion);
 
+                // Handle AWS OpenSearch running in compatibility mode
+                var tagLine = response.Dictionary["tagline"];
+                if (tagLine.HasValue &&
+                    tagLine.Value.ToString().StartsWith("The OpenSearch Project", StringComparison.OrdinalIgnoreCase) &&
+                    version.Major == 7)
+                {
+                    version = new Version(1, 0, 0);
+                }
+
+                return version;
             }
             catch (Exception ex)
             {

@@ -1,4 +1,4 @@
-namespace Serilog.Formatting.Opensearch
+namespace Serilog.Formatting.OpenSearch
 {
     /// <summary>
     ///     Defines a method to serialize custom value to string

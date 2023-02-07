@@ -3,9 +3,9 @@ using OpenSearch.Client.JsonNetSerializer;
 using OpenSearch.Net;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests.Discrepancies
+namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
 {
-    public class JsonNetSerializerTests : OpensearchSinkUniformityTestsBase
+    public class JsonNetSerializerTests : OpenSearchSinkUniformityTestsBase
     {
         public JsonNetSerializerTests() : base(JsonNetSerializer.Default(LowLevelRequestResponseSerializer.Instance, new ConnectionSettings())) { }
 

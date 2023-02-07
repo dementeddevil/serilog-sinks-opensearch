@@ -5,14 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Serilog.Core;
 using Serilog.Debugging;
-using Serilog.Sinks.Opensearch.Durable;
+using Serilog.Sinks.OpenSearch.Durable;
 
-namespace Serilog.Sinks.Opensearch.Durable
+namespace Serilog.Sinks.OpenSearch.Durable
 {
     /// <summary>
     /// 
     /// </summary>
-    public class OpensearchLogShipper : LogShipper<List<string>>
+    public class OpenSearchLogShipper : LogShipper<List<string>>
     {
         private readonly Action _registerTemplateIfNeeded;
         bool _didRegisterTemplateIfNeeded = false;
@@ -31,7 +31,7 @@ namespace Serilog.Sinks.Opensearch.Durable
         /// <param name="bufferSizeLimitBytes"></param>
         /// <param name="registerTemplateIfNeeded"></param>
         /// <param name="rollingInterval"></param>
-        public OpensearchLogShipper(string bufferBaseFilename, int batchPostingLimit, TimeSpan period,
+        public OpenSearchLogShipper(string bufferBaseFilename, int batchPostingLimit, TimeSpan period,
             long? eventBodyLimitBytes, LoggingLevelSwitch levelControlSwitch, ILogClient<List<string>> logClient,
             IPayloadReader<List<string>> payloadReader, long? retainedInvalidPayloadsLimitBytes,
             long? bufferSizeLimitBytes, Action registerTemplateIfNeeded, RollingInterval rollingInterval)

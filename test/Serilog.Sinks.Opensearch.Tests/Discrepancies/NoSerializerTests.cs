@@ -1,8 +1,8 @@
 ﻿using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests.Discrepancies
+namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
 {
-    public class NoSerializerTests : OpensearchSinkUniformityTestsBase
+    public class NoSerializerTests : OpenSearchSinkUniformityTestsBase
     {
         public NoSerializerTests() : base(null) {}
 

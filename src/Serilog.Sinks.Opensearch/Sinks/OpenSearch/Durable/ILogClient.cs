@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Serilog.Sinks.Opensearch.Durable
+namespace Serilog.Sinks.OpenSearch.Durable
 {
     /// <summary>
     /// A wrapper client which talk to the log server

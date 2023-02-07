@@ -9,15 +9,15 @@ using Newtonsoft.Json.Linq;
 using OpenSearch.Client;
 using OpenSearch.Client.JsonNetSerializer;
 using OpenSearch.Net;
-using Serilog.Sinks.Opensearch.Tests.Domain;
+using Serilog.Sinks.OpenSearch.Tests.Domain;
 
-namespace Serilog.Sinks.Opensearch.Tests.Stubs
+namespace Serilog.Sinks.OpenSearch.Tests.Stubs
 {
-    public abstract partial class OpensearchSinkTestsBase
+    public abstract partial class OpenSearchSinkTestsBase
     {
         static readonly TimeSpan TinyWait = TimeSpan.FromMilliseconds(50);
         protected readonly IConnection _connection;
-        protected readonly OpensearchSinkOptions _options;
+        protected readonly OpenSearchSinkOptions _options;
         protected List<string> _seenHttpPosts = new List<string>();
         protected List<int> _seenHttpHeads = new List<int>();
         protected List<Tuple<Uri, int>> _seenHttpGets = new List<Tuple<Uri, int>>();
@@ -26,7 +26,7 @@ namespace Serilog.Sinks.Opensearch.Tests.Stubs
 
         protected int _templateExistsReturnCode = 404;
 
-        protected OpensearchSinkTestsBase()
+        protected OpenSearchSinkTestsBase()
         {
             _seenHttpPosts = new List<string>();
             _seenHttpHeads = new List<int>();
@@ -41,7 +41,7 @@ namespace Serilog.Sinks.Opensearch.Tests.Stubs
                                              () => _templateExistsReturnCode);
             _serializer = JsonNetSerializer.Default(LowLevelRequestResponseSerializer.Instance, new ConnectionSettings(connectionPool, _connection));
 
-            _options = new OpensearchSinkOptions(connectionPool)
+            _options = new OpenSearchSinkOptions(connectionPool)
             {
                 BatchPostingLimit = 2,
                 //Period = TinyWait,
@@ -56,13 +56,13 @@ namespace Serilog.Sinks.Opensearch.Tests.Stubs
         /// </summary>
         /// <param name="expectedCount"></param>
         /// <returns></returns>
-        protected IList<SerilogOpensearchEvent> GetPostedLogEvents(int expectedCount)
+        protected IList<SerilogOpenSearchEvent> GetPostedLogEvents(int expectedCount)
         {
             _seenHttpPosts.Should().NotBeNullOrEmpty();
             var totalBulks = _seenHttpPosts.SelectMany(p => p.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries)).ToList();
             totalBulks.Should().NotBeNullOrEmpty().And.HaveCount(expectedCount * 2);
 
-            var bulkActions = new List<SerilogOpensearchEvent>();
+            var bulkActions = new List<SerilogOpenSearchEvent>();
             for (var i = 0; i < totalBulks.Count; i += 2)
             {
                 BulkOperation action;
@@ -78,15 +78,15 @@ namespace Serilog.Sinks.Opensearch.Tests.Stubs
                 action.IndexAction.Index.Should().NotBeNullOrEmpty().And.StartWith("logstash-");
                 action.IndexAction.Type.Should().BeNull();
 
-                SerilogOpensearchEvent actionMetaData;
+                SerilogOpenSearchEvent actionMetaData;
                 try
                 {
-                    actionMetaData = Deserialize<SerilogOpensearchEvent>(totalBulks[i + 1]);
+                    actionMetaData = Deserialize<SerilogOpenSearchEvent>(totalBulks[i + 1]);
                 }
                 catch (Exception e)
                 {
                     throw new Exception(
-                        $"Can not deserialize into SerilogOpensearchMessage \r\n:{totalBulks[i + 1]}", e);
+                        $"Can not deserialize into SerilogOpenSearchMessage \r\n:{totalBulks[i + 1]}", e);
                 }
                 actionMetaData.Should().NotBeNull();
                 bulkActions.Add(actionMetaData);

@@ -23,7 +23,7 @@ using Serilog.Formatting;
 using Serilog.Formatting.Json;
 using Serilog.Parsing;
 
-namespace Serilog.Formatting.Opensearch
+namespace Serilog.Formatting.OpenSearch
 {
     /// <summary>
     /// Formats log events in a simple JSON structure. Instances of this class

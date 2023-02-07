@@ -2,13 +2,13 @@
 using System.Runtime.Serialization;
 using OpenSearch.Net;
 using FluentAssertions;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 
-namespace Serilog.Sinks.Opensearch.Tests.Discrepancies
+namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
 {
-    public class OpensearchSinkUniformityTestsBase : OpensearchSinkTestsBase
+    public class OpenSearchSinkUniformityTestsBase : OpenSearchSinkTestsBase
     {
-        public OpensearchSinkUniformityTestsBase(IOpenSearchSerializer serializer)
+        public OpenSearchSinkUniformityTestsBase(IOpenSearchSerializer serializer)
         {
             _options.Serializer = serializer;
         }
@@ -19,7 +19,7 @@ namespace Serilog.Sinks.Opensearch.Tests.Discrepancies
                 .MinimumLevel.Debug()
                 .Enrich.WithMachineName()
                 .WriteTo.Console()
-                .WriteTo.Opensearch(_options);
+                .WriteTo.OpenSearch(_options);
 
             var logger = loggerConfig.CreateLogger();
             using (logger as IDisposable)

@@ -21,12 +21,12 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting;
 
-namespace Serilog.Sinks.Opensearch
+namespace Serilog.Sinks.OpenSearch
 {
     /// <summary>
-    /// Provides OpensearchSink with configurable options
+    /// Provides OpenSearchSink with configurable options
     /// </summary>
-    public class OpensearchSinkOptions
+    public class OpenSearchSinkOptions
     {
         private int _queueSizeLimit;
 
@@ -37,13 +37,13 @@ namespace Serilog.Sinks.Opensearch
         public bool AutoRegisterTemplate { get; set; }
 
         /// <summary>
-        /// When using the <see cref="AutoRegisterTemplate"/> feature, this allows to set the Opensearch version. Depending on the
+        /// When using the <see cref="AutoRegisterTemplate"/> feature, this allows to set the OpenSearch version. Depending on the
         /// version, a template will be selected. Defaults to 7.0.
         /// </summary>
         public AutoRegisterTemplateVersion? AutoRegisterTemplateVersion { get; set; }
 
         /// <summary>
-        /// Specifies the option on how to handle failures when writing the template to Opensearch. This is only applicable when using the AutoRegisterTemplate option.
+        /// Specifies the option on how to handle failures when writing the template to OpenSearch. This is only applicable when using the AutoRegisterTemplate option.
         /// </summary>
         public RegisterTemplateRecovery RegisterTemplateFailure { get; set; }
 
@@ -66,26 +66,26 @@ namespace Serilog.Sinks.Opensearch
         public Dictionary<string,string> TemplateCustomSettings { get; set; }
 
         /// <summary>
-        /// When using the <see cref="AutoRegisterTemplate"/> feature, this allows you to overwrite the template in Opensearch if it already exists.
+        /// When using the <see cref="AutoRegisterTemplate"/> feature, this allows you to overwrite the template in OpenSearch if it already exists.
         /// Defaults to: false
         /// </summary>
         public bool OverwriteTemplate { get; set; }
 
         /// <summary>
         /// When using the <see cref="AutoRegisterTemplate"/> feature, this allows you to override the default number of shards.
-        /// If not provided, this will default to the default number_of_shards configured in Opensearch.
+        /// If not provided, this will default to the default number_of_shards configured in OpenSearch.
         /// </summary>
         public int? NumberOfShards { get; set; }
 
         /// <summary>
         /// When using the <see cref="AutoRegisterTemplate"/> feature, this allows you to override the default number of replicas.
-        /// If not provided, this will default to the default number_of_replicas configured in Opensearch.
+        /// If not provided, this will default to the default number_of_replicas configured in OpenSearch.
         /// </summary>
         public int? NumberOfReplicas { get; set; }
 
         /// <summary>
         /// Index aliases. Sets alias/aliases to an index in opensearch.
-        /// Tested and works with Opensearch 7.x
+        /// Tested and works with OpenSearch 7.x
         /// When using the <see cref="AutoRegisterTemplate"/> feature, this allows you to set index aliases.
         /// If not provided, index aliases will be blank.
         /// </summary>
@@ -223,7 +223,7 @@ namespace Serilog.Sinks.Opensearch
         /// </summary>
         public long? BufferRetainedInvalidPayloadsLimitBytes { get; set; }
         /// <summary>
-        /// Customizes the formatter used when converting log events into Opensearch documents. Please note that the formatter output must be valid JSON :)
+        /// Customizes the formatter used when converting log events into OpenSearch documents. Please note that the formatter output must be valid JSON :)
         /// </summary>
         public ITextFormatter CustomFormatter { get; set; }
 
@@ -238,19 +238,19 @@ namespace Serilog.Sinks.Opensearch
         public EmitEventFailureHandling EmitEventFailure { get; set; }
 
         /// <summary>
-        /// Sink to use when Opensearch is unable to accept the events. This is optional and depends on the EmitEventFailure setting.
+        /// Sink to use when OpenSearch is unable to accept the events. This is optional and depends on the EmitEventFailure setting.
         /// </summary>
         public ILogEventSink FailureSink { get; set; }
 
         /// <summary>
-        /// A callback which can be used to handle logevents which are not submitted to Opensearch
+        /// A callback which can be used to handle logevents which are not submitted to OpenSearch
         /// like when it is unable to accept the events. This is optional and depends on the EmitEventFailure setting.
         /// </summary>
         public Action<LogEvent> FailureCallback { get; set; }
 
         /// <summary>
         /// The maximum number of events that will be held in-memory while waiting to ship them to
-        /// Opensearch. Beyond this limit, events will be dropped. The default is 100,000. Has no effect on
+        /// OpenSearch. Beyond this limit, events will be dropped. The default is 100,000. Has no effect on
         /// durable log shipping.
         /// </summary>
         public int QueueSizeLimit
@@ -284,7 +284,7 @@ namespace Serilog.Sinks.Opensearch
         /// <summary>
         /// Configures the opensearch sink defaults
         /// </summary>
-        public OpensearchSinkOptions()
+        public OpenSearchSinkOptions()
         {
             this.IndexFormat = "logstash-{0:yyyy.MM.dd}";
             this.DeadLetterIndexName = "deadletter-{0:yyyy.MM.dd}";
@@ -304,13 +304,13 @@ namespace Serilog.Sinks.Opensearch
         }
 
         /// <summary>
-        /// The default Opensearch type name used for Opensearch versions prior to 7.
-        /// <para>As of <c>Opensearch 7</c> and up <c>_type</c> has been removed.</para>
+        /// The default OpenSearch type name used for OpenSearch versions prior to 7.
+        /// <para>As of <c>OpenSearch 7</c> and up <c>_type</c> has been removed.</para>
         /// </summary>
         public static string DefaultTypeName { get; } = "logevent";
 
         /// <summary>
-        /// Instructs the sink to auto detect the running Opensearch version.
+        /// Instructs the sink to auto detect the running OpenSearch version.
         ///
         /// <para>
         /// This information is used to attempt to register an older or newer template
@@ -325,17 +325,17 @@ namespace Serilog.Sinks.Opensearch
         /// 
         /// <para>
         /// Currently supports:
-        /// - using <see cref="Serilog.Sinks.Opensearch.AutoRegisterTemplateVersion.OSv1"/> against <c> Opensearch 1.x </c>
-        /// - using <see cref="Serilog.Sinks.Opensearch.AutoRegisterTemplateVersion.OSv2"/> against <c> Opensearch 2.x </c>
+        /// - using <see cref="Serilog.Sinks.OpenSearch.AutoRegisterTemplateVersion.OSv1"/> against <c> OpenSearch 1.x </c>
+        /// - using <see cref="Serilog.Sinks.OpenSearch.AutoRegisterTemplateVersion.OSv2"/> against <c> OpenSearch 2.x </c>
         /// </para>
         /// </summary>
-        public bool DetectOpensearchVersion { get; set; } = true;
+        public bool DetectOpenSearchVersion { get; set; } = true;
 
         /// <summary>
         /// Configures the opensearch sink
         /// </summary>
         /// <param name="connectionPool">The connectionpool to use to write events to</param>
-        public OpensearchSinkOptions(IConnectionPool connectionPool)
+        public OpenSearchSinkOptions(IConnectionPool connectionPool)
             : this()
         {
             ConnectionPool = connectionPool;
@@ -345,7 +345,7 @@ namespace Serilog.Sinks.Opensearch
         /// Configures the opensearch sink
         /// </summary>
         /// <param name="nodes">The nodes to write to</param>
-        public OpensearchSinkOptions(IEnumerable<Uri> nodes)
+        public OpenSearchSinkOptions(IEnumerable<Uri> nodes)
             : this()
         {
             var materialized = nodes?.Where(n => n != null).ToArray();
@@ -361,13 +361,13 @@ namespace Serilog.Sinks.Opensearch
         /// Configures the opensearch sink
         /// </summary>
         /// <param name="node">The node to write to</param>
-        public OpensearchSinkOptions(Uri node) : this(new[] { node }) { }
+        public OpenSearchSinkOptions(Uri node) : this(new[] { node }) { }
 
         private readonly Uri _defaultNode = new Uri("http://localhost:9200");
     }
 
     /// <summary>
-    /// Sepecifies options for handling failures when emitting the events to Opensearch. Can be a combination of options.
+    /// Sepecifies options for handling failures when emitting the events to OpenSearch. Can be a combination of options.
     /// </summary>
     [Flags]
     public enum EmitEventFailureHandling
@@ -388,7 +388,7 @@ namespace Serilog.Sinks.Opensearch
         ThrowException = 4,
 
         /// <summary>
-        /// The failure callback function will be called when the event cannot be submitted to Opensearch.
+        /// The failure callback function will be called when the event cannot be submitted to OpenSearch.
         /// </summary>
         RaiseCallback = 8
     }

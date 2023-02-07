@@ -5,11 +5,11 @@ using FluentAssertions;
 using Xunit;
 using Serilog.Events;
 using Serilog.Parsing;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 
-namespace Serilog.Sinks.Opensearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class RealExceptionNoSerializerTests : OpensearchSinkTestsBase
+    public class RealExceptionNoSerializerTests : OpenSearchSinkTestsBase
     {
         [Fact]
         public async Task WhenPassingASerializer_ShouldExpandToJson()
@@ -23,7 +23,7 @@ namespace Serilog.Sinks.Opensearch.Tests
                 var timestamp = new DateTimeOffset(2013, 05, 28, 22, 10, 20, 666, TimeSpan.FromHours(10));
                 var messageTemplate = "{Song}++";
                 var template = new MessageTemplateParser().Parse(messageTemplate);
-                using (var sink = new OpensearchSink(_options)
+                using (var sink = new OpenSearchSink(_options)
                     )
                 {
                     var properties = new List<LogEventProperty>

@@ -1,4 +1,4 @@
-namespace Serilog.Sinks.Opensearch.Durable
+namespace Serilog.Sinks.OpenSearch.Durable
 {
     /// <summary>
     /// Reads logs from logfiles and formats it for logserver

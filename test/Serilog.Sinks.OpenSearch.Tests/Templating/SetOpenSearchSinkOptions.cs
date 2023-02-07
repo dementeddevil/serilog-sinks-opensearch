@@ -1,17 +1,17 @@
 ﻿using System;
 using FluentAssertions;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests.Templating
+namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
-    public class SetOpensearchSinkOptions : OpensearchSinkTestsBase
+    public class SetOpenSearchSinkOptions : OpenSearchSinkTestsBase
     {
 
         [Fact]
         public void WhenCreatingOptions_NumberOfShardsInjected_NumberOfShardsAreSet()
         {
-            var options = new OpensearchSinkOptions(new Uri("http://localhost:9100"))
+            var options = new OpenSearchSinkOptions(new Uri("http://localhost:9100"))
             {
                 AutoRegisterTemplate = true,
 

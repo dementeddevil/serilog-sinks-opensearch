@@ -16,7 +16,7 @@
 using System;
 using System.IO;
 
-namespace Serilog.Formatting.Opensearch
+namespace Serilog.Formatting.OpenSearch
 {
     /// <summary>
     /// A JSON formatter which plays nice with Kibana, 
@@ -26,7 +26,7 @@ namespace Serilog.Formatting.Opensearch
     /// Note that using this formatter comes at the cost that the exception tree 
     /// with inner exceptions can grow deep.
     /// </summary>
-    public class ExceptionAsObjectJsonFormatter : OpensearchJsonFormatter
+    public class ExceptionAsObjectJsonFormatter : OpenSearchJsonFormatter
     {
         /// <summary>
         /// Constructs a <see cref="ExceptionAsObjectJsonFormatter"/>.

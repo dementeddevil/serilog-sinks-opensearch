@@ -1,24 +1,24 @@
 ﻿using System;
 using FluentAssertions;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests.Templating
+namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
-    public class SendsTemplateTests : OpensearchSinkTestsBase
+    public class SendsTemplateTests : OpenSearchSinkTestsBase
     {
         private readonly Tuple<Uri, string> _templatePut;
 
         public SendsTemplateTests()
         {
-            _options.DetectOpensearchVersion = false;
+            _options.DetectOpenSearchVersion = false;
             _options.AutoRegisterTemplate = true;
 
             var loggerConfig = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .Enrich.WithMachineName()
                 .WriteTo.Console()
-                .WriteTo.Opensearch(_options);
+                .WriteTo.OpenSearch(_options);
 
             var logger = loggerConfig.CreateLogger();
             using (logger as IDisposable)
@@ -32,7 +32,7 @@ namespace Serilog.Sinks.Opensearch.Tests.Templating
         }
 
         [Fact]
-        public void ShouldRegisterTheVersion7TemplateOnRegistrationWhenDetectOpensearchVersionFalse()
+        public void ShouldRegisterTheVersion7TemplateOnRegistrationWhenDetectOpenSearchVersionFalse()
         {
             JsonEquals(_templatePut.Item2, "template_v7_no-aliases.json");
         }

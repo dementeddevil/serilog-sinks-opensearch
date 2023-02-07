@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Serilog.Sinks.Opensearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
     public static class TestDataHelper
     {

@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Serilog.Formatting.Opensearch;
+using Serilog.Formatting.OpenSearch;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class OpensearchJsonFormatterTests
+    public class OpenSearchJsonFormatterTests
     {
         #region Helpers
         static LogEvent CreateLogEvent() =>
@@ -78,7 +78,7 @@ namespace Serilog.Sinks.Opensearch.Tests
             properties: Enumerable.Empty<LogEventProperty>()
         );
 
-        static void CheckProperties(Func<LogEvent> logEventProvider, OpensearchJsonFormatter formatter, Action<string> assert)
+        static void CheckProperties(Func<LogEvent> logEventProvider, OpenSearchJsonFormatter formatter, Action<string> assert)
         {
             string result = null;
 
@@ -94,7 +94,7 @@ namespace Serilog.Sinks.Opensearch.Tests
             assert(result);
         }
 
-        static void CheckProperties(OpensearchJsonFormatter formatter, Action<string> assert) =>
+        static void CheckProperties(OpenSearchJsonFormatter formatter, Action<string> assert) =>
             CheckProperties(CreateLogEvent, formatter, assert);
 
         static void ContainsProperty(string propertyToCheck, string result) =>
@@ -116,14 +116,14 @@ namespace Serilog.Sinks.Opensearch.Tests
         #endregion
 
         [Theory]
-        [InlineData(OpensearchJsonFormatter.RenderedMessagePropertyName)]
-        [InlineData(OpensearchJsonFormatter.MessageTemplatePropertyName)]
-        [InlineData(OpensearchJsonFormatter.TimestampPropertyName)]
-        [InlineData(OpensearchJsonFormatter.LevelPropertyName)]
+        [InlineData(OpenSearchJsonFormatter.RenderedMessagePropertyName)]
+        [InlineData(OpenSearchJsonFormatter.MessageTemplatePropertyName)]
+        [InlineData(OpenSearchJsonFormatter.TimestampPropertyName)]
+        [InlineData(OpenSearchJsonFormatter.LevelPropertyName)]
         public void DefaultJsonFormater_Should_Render_default_properties(string propertyToCheck)
         {
             CheckProperties(
-                new OpensearchJsonFormatter(),
+                new OpenSearchJsonFormatter(),
                 result => ContainsProperty(FormatProperty(propertyToCheck), result));
         }
 
@@ -131,13 +131,13 @@ namespace Serilog.Sinks.Opensearch.Tests
         public void When_disabling_renderMessage_Should_not_render_message_but_others()
         {
             CheckProperties(
-                new OpensearchJsonFormatter(renderMessage: false),
+                new OpenSearchJsonFormatter(renderMessage: false),
                 result =>
                 {
-                    DoesNotContainsProperty(FormatProperty(OpensearchJsonFormatter.RenderedMessagePropertyName), result);
-                    ContainsProperty(FormatProperty(OpensearchJsonFormatter.MessageTemplatePropertyName), result);
-                    ContainsProperty(FormatProperty(OpensearchJsonFormatter.TimestampPropertyName), result);
-                    ContainsProperty(FormatProperty(OpensearchJsonFormatter.LevelPropertyName), result);
+                    DoesNotContainsProperty(FormatProperty(OpenSearchJsonFormatter.RenderedMessagePropertyName), result);
+                    ContainsProperty(FormatProperty(OpenSearchJsonFormatter.MessageTemplatePropertyName), result);
+                    ContainsProperty(FormatProperty(OpenSearchJsonFormatter.TimestampPropertyName), result);
+                    ContainsProperty(FormatProperty(OpenSearchJsonFormatter.LevelPropertyName), result);
                 });
         }
 
@@ -145,13 +145,13 @@ namespace Serilog.Sinks.Opensearch.Tests
         public void When_disabling_renderMessageTemplate_Should_not_render_message_template_but_others()
         {
             CheckProperties(
-                new OpensearchJsonFormatter(renderMessageTemplate: false),
+                new OpenSearchJsonFormatter(renderMessageTemplate: false),
                 result =>
                 {
-                    DoesNotContainsProperty(FormatProperty(OpensearchJsonFormatter.MessageTemplatePropertyName), result);
-                    ContainsProperty(FormatProperty(OpensearchJsonFormatter.RenderedMessagePropertyName), result);
-                    ContainsProperty(FormatProperty(OpensearchJsonFormatter.TimestampPropertyName), result);
-                    ContainsProperty(FormatProperty(OpensearchJsonFormatter.LevelPropertyName), result);
+                    DoesNotContainsProperty(FormatProperty(OpenSearchJsonFormatter.MessageTemplatePropertyName), result);
+                    ContainsProperty(FormatProperty(OpenSearchJsonFormatter.RenderedMessagePropertyName), result);
+                    ContainsProperty(FormatProperty(OpenSearchJsonFormatter.TimestampPropertyName), result);
+                    ContainsProperty(FormatProperty(OpenSearchJsonFormatter.LevelPropertyName), result);
                 });
         }
 
@@ -159,7 +159,7 @@ namespace Serilog.Sinks.Opensearch.Tests
         public void DefaultJsonFormater_Should_enclose_object()
         {
             CheckProperties(
-                new OpensearchJsonFormatter(),
+                new OpenSearchJsonFormatter(),
                 result =>
                 {
                     Assert.StartsWith("{", result);
@@ -171,7 +171,7 @@ namespace Serilog.Sinks.Opensearch.Tests
         public void When_omitEnclosingObject_should_not_enclose_object()
         {
             CheckProperties(
-                new OpensearchJsonFormatter(omitEnclosingObject: true),
+                new OpenSearchJsonFormatter(omitEnclosingObject: true),
                 result =>
                 {
                     Assert.StartsWith("\"", result);
@@ -183,7 +183,7 @@ namespace Serilog.Sinks.Opensearch.Tests
         public void When_provide_closing_delimiter_should_use_it()
         {
             CheckProperties(
-                new OpensearchJsonFormatter(closingDelimiter: "closingDelimiter"),
+                new OpenSearchJsonFormatter(closingDelimiter: "closingDelimiter"),
                 result =>
                 {
                     Assert.EndsWith("closingDelimiter", result);
@@ -195,7 +195,7 @@ namespace Serilog.Sinks.Opensearch.Tests
         {
             CheckProperties(
                 () => CreateLogEventWithException(CreateThrownException()),
-                new OpensearchJsonFormatter(),
+                new OpenSearchJsonFormatter(),
                 result =>
                 {
                     string exceptionsProperty = FormatProperty("exceptions");
@@ -224,7 +224,7 @@ namespace Serilog.Sinks.Opensearch.Tests
         {
             CheckProperties(
                 () => CreateLogEventWithException(exception),
-                new OpensearchJsonFormatter(formatStackTraceAsArray: true),
+                new OpenSearchJsonFormatter(formatStackTraceAsArray: true),
                 result =>
                 {
                     string exceptionsProperty = FormatProperty("exceptions");

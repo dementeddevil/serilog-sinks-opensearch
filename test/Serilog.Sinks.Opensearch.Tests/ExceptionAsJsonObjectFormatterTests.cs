@@ -6,14 +6,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Xunit;
 using Serilog.Events;
-using Serilog.Formatting.Opensearch;
+using Serilog.Formatting.OpenSearch;
 using Serilog.Parsing;
-using Serilog.Sinks.Opensearch.Tests.Domain;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Domain;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 
-namespace Serilog.Sinks.Opensearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class ExceptionAsJsonObjectFormatterTests : OpensearchSinkTestsBase
+    public class ExceptionAsJsonObjectFormatterTests : OpenSearchSinkTestsBase
     {
         private static readonly MessageTemplateParser _messageTemplateParser = new MessageTemplateParser();
 
@@ -28,7 +28,7 @@ namespace Serilog.Sinks.Opensearch.Tests
         {
             const string expectedMessage = "test";
 
-            using (var sink = new OpensearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(LogEventWithMessage(expectedMessage));
             }
@@ -43,7 +43,7 @@ namespace Serilog.Sinks.Opensearch.Tests
         {
             const string expectedExceptionMessage = "test exception";
 
-            using (var sink = new OpensearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(LogEventWithMessage("test", new Exception(expectedExceptionMessage)));
             }
@@ -63,7 +63,7 @@ namespace Serilog.Sinks.Opensearch.Tests
             var inner = new InvalidOperationException();
             var exception = new Exception("outer", inner);
 
-            using (var sink = new OpensearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(LogEventWithMessage("test", exception));
             }
@@ -105,13 +105,13 @@ namespace Serilog.Sinks.Opensearch.Tests
             public string Message { get; set; }
 
             [JsonProperty("exception")]
-            public SerilogOpensearchExceptionInfoWithInner Exception { get; set; }
+            public SerilogOpenSearchExceptionInfoWithInner Exception { get; set; }
         }
 
-        class SerilogOpensearchExceptionInfoWithInner : SerilogOpensearchExceptionInfo
+        class SerilogOpenSearchExceptionInfoWithInner : SerilogOpenSearchExceptionInfo
         {
             [JsonProperty("innerException")]
-            public SerilogOpensearchExceptionInfo InnerException { get; set; }
+            public SerilogOpenSearchExceptionInfo InnerException { get; set; }
         }
     }
 

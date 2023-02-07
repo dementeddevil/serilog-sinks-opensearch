@@ -24,12 +24,12 @@ using System.Runtime.Serialization;
 using Serilog.Events;
 using Serilog.Parsing;
 
-namespace Serilog.Formatting.Opensearch
+namespace Serilog.Formatting.OpenSearch
 {
     /// <summary>
     /// Custom Json formatter that respects the configured property name handling and forces 'Timestamp' to @timestamp
     /// </summary>
-    public class OpensearchJsonFormatter : DefaultJsonFormatter
+    public class OpenSearchJsonFormatter : DefaultJsonFormatter
     {
         readonly ISerializer _serializer;
         readonly bool _inlineFields;
@@ -57,7 +57,7 @@ namespace Serilog.Formatting.Opensearch
         public const string TimestampPropertyName = "@timestamp";
 
         /// <summary>
-        /// Construct a <see cref="OpensearchJsonFormatter"/>.
+        /// Construct a <see cref="OpenSearchJsonFormatter"/>.
         /// </summary>
         /// <param name="omitEnclosingObject">If true, the properties of the event will be written to
         /// the output without enclosing braces. Otherwise, if false, each event will be written as a well-formed
@@ -73,7 +73,7 @@ namespace Serilog.Formatting.Opensearch
         /// <param name="renderMessageTemplate">If true, the message template will be rendered and written to the output as a
         /// property named RenderedMessageTemplate.</param>
         /// <param name="formatStackTraceAsArray">If true, splits the StackTrace by new line and writes it as a an array of strings</param>
-        public OpensearchJsonFormatter(
+        public OpenSearchJsonFormatter(
             bool omitEnclosingObject = false,
             string closingDelimiter = null,
             bool renderMessage = true,

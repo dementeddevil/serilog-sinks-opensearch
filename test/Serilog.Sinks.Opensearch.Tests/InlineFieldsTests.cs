@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Serilog.Events;
 using Serilog.Parsing;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class InlineFieldsTests : OpensearchSinkTestsBase
+    public class InlineFieldsTests : OpenSearchSinkTestsBase
     {
         [Fact]
         public async Task UsesCustomPropertyNames()
@@ -24,7 +24,7 @@ namespace Serilog.Sinks.Opensearch.Tests
                 var messageTemplate = "{Song}++";
                 var template = new MessageTemplateParser().Parse(messageTemplate);
                 _options.InlineFields = true;
-                using (var sink = new OpensearchSink(_options))
+                using (var sink = new OpenSearchSink(_options))
                 {
                     var properties = new List<LogEventProperty>
                     {

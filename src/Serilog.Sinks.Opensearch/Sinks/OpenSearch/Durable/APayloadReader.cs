@@ -19,7 +19,7 @@ using System.IO;
 using System.Text;
 using Serilog.Debugging;
 
-namespace Serilog.Sinks.Opensearch.Durable
+namespace Serilog.Sinks.OpenSearch.Durable
 {
     /// <summary>
     /// Abstract payload reader

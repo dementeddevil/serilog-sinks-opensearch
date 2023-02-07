@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using OpenSearch.Net;
 using Serilog.Debugging;
 
-namespace Serilog.Sinks.Opensearch.Durable
+namespace Serilog.Sinks.OpenSearch.Durable
 {
     /// <summary>
     /// 
     /// </summary>
-    public class OpensearchLogClient : ILogClient<List<string>>
+    public class OpenSearchLogClient : ILogClient<List<string>>
     {
         private readonly IOpenSearchLowLevelClient _openSearchLowLevelClient;
         private readonly Func<string, long?, string, string> _cleanPayload;
@@ -22,7 +22,7 @@ namespace Serilog.Sinks.Opensearch.Durable
         /// <param name="openSearchLowLevelClient"></param>
         /// <param name="cleanPayload"></param>
         /// <param name="elasticOpType"></param>
-        public OpensearchLogClient(IOpenSearchLowLevelClient openSearchLowLevelClient,
+        public OpenSearchLogClient(IOpenSearchLowLevelClient openSearchLowLevelClient,
             Func<string, long?, string, string> cleanPayload,
             OpenOpType elasticOpType)
         {
@@ -56,7 +56,7 @@ namespace Serilog.Sinks.Opensearch.Durable
                 }
                 else
                 {
-                    SelfLog.WriteLine("Received failed Opensearch shipping result {0}: {1}", response.HttpStatusCode,
+                    SelfLog.WriteLine("Received failed OpenSearch shipping result {0}: {1}", response.HttpStatusCode,
                         response.OriginalException);
                     return new SentPayloadResult(response, false,
                         new InvalidResult()
@@ -86,7 +86,7 @@ namespace Serilog.Sinks.Opensearch.Durable
             bool hasErrors = false;
             foreach (dynamic item in items)
             {
-                var itemIndex = item?[BatchedOpensearchSink.BulkAction(_elasticOpType)];
+                var itemIndex = item?[BatchedOpenSearchSink.BulkAction(_elasticOpType)];
                 long? status = itemIndex?["status"];
                 i++;
                 if (!status.HasValue || status < 300)
@@ -101,7 +101,7 @@ namespace Serilog.Sinks.Opensearch.Durable
 
                 if (int.TryParse(id.Split('_')[0], out int index))
                 {
-                    SelfLog.WriteLine("Received failed Opensearch shipping result {0}: {1}. Failed payload : {2}.", status, errorString, payload.ElementAt(index * 2 + 1));
+                    SelfLog.WriteLine("Received failed OpenSearch shipping result {0}: {1}. Failed payload : {2}.", status, errorString, payload.ElementAt(index * 2 + 1));
                     badPayload.Add(payload.ElementAt(index * 2));
                     badPayload.Add(payload.ElementAt(index * 2 + 1));
                     if (_cleanPayload != null)
@@ -112,7 +112,7 @@ namespace Serilog.Sinks.Opensearch.Durable
                 }
                 else
                 {
-                    SelfLog.WriteLine($"Received failed Opensearch shipping result {status}: {errorString}.");
+                    SelfLog.WriteLine($"Received failed OpenSearch shipping result {status}: {errorString}.");
                 }
             }
 

@@ -1,11 +1,11 @@
 ﻿using OpenSearch.Net;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests.Discrepancies
+namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
 {
-    public class OpensearchDefaultSerializerTests : OpensearchSinkUniformityTestsBase
+    public class OpenSearchDefaultSerializerTests : OpenSearchSinkUniformityTestsBase
     {
-        public OpensearchDefaultSerializerTests() : base(new LowLevelRequestResponseSerializer()) { }
+        public OpenSearchDefaultSerializerTests() : base(new LowLevelRequestResponseSerializer()) { }
 
         [Fact]
         public void Should_SerializeToExpandedExceptionObjectWhenExceptionIsSet()

@@ -20,22 +20,22 @@ using OpenSearch.Net.Specification.IndicesApi;
 using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Formatting;
-using Serilog.Formatting.Opensearch;
-using Serilog.Sinks.Opensearch.Sinks.Opensearch;
+using Serilog.Formatting.OpenSearch;
+using Serilog.Sinks.OpenSearch.Sinks.OpenSearch;
 
-namespace Serilog.Sinks.Opensearch
+namespace Serilog.Sinks.OpenSearch
 {
-    internal class OpensearchSinkState
+    internal class OpenSearchSinkState
     {
-        public static OpensearchSinkState Create(OpensearchSinkOptions options)
+        public static OpenSearchSinkState Create(OpenSearchSinkOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
-            return new OpensearchSinkState(options);
+            return new OpenSearchSinkState(options);
         }
 
-        private readonly OpensearchSinkOptions _options;
+        private readonly OpenSearchSinkOptions _options;
 
         readonly Func<LogEvent, DateTimeOffset, string> _indexDecider;
         readonly Func<string, DateTime, string> _bufferedIndexDecider;
@@ -50,18 +50,18 @@ namespace Serilog.Sinks.Opensearch
         private readonly string _templateMatchString;
         private static readonly Regex IndexFormatRegex = new Regex(@"^(.*)(?:\{0\:.+\})(.*)$");
 
-        private readonly OpensearchVersionManager _versionManager;
+        private readonly OpenSearchVersionManager _versionManager;
 
         private bool IncludeTypeName => true; //_versionManager.EffectiveVersion.Major >= 7;
 
-        public OpensearchSinkOptions Options => _options;
+        public OpenSearchSinkOptions Options => _options;
         public IOpenSearchLowLevelClient Client => _client;
         public ITextFormatter Formatter => _formatter;
         public ITextFormatter DurableFormatter => _durableFormatter;
 
         public bool TemplateRegistrationSuccess { get; private set; }
 
-        private OpensearchSinkState(OpensearchSinkOptions options)
+        private OpenSearchSinkState(OpenSearchSinkOptions options)
         {
             if (string.IsNullOrWhiteSpace(options.IndexFormat)) throw new ArgumentException("options.IndexFormat");
             if (string.IsNullOrWhiteSpace(options.TemplateName)) throw new ArgumentException("options.TemplateName");
@@ -97,20 +97,20 @@ namespace Serilog.Sinks.Opensearch
             _registerTemplateOnStartup = options.AutoRegisterTemplate;
             TemplateRegistrationSuccess = !_registerTemplateOnStartup;
 
-            _versionManager = new OpensearchVersionManager(options.DetectOpensearchVersion, _client);
+            _versionManager = new OpenSearchVersionManager(options.DetectOpenSearchVersion, _client);
 
             // Resolve typeName (looks like this is removed in all opensearch versions)
             /*if (_versionManager.EffectiveVersion.Major < 7)
                 _options.TypeName = string.IsNullOrWhiteSpace(_options.TypeName)
-                    ? OpensearchSinkOptions.DefaultTypeName // "logevent"
+                    ? OpenSearchSinkOptions.DefaultTypeName // "logevent"
                     : _options.TypeName;
             else*/
                 _options.TypeName = null;
         }
 
-        public static ITextFormatter CreateDefaultFormatter(OpensearchSinkOptions options)
+        public static ITextFormatter CreateDefaultFormatter(OpenSearchSinkOptions options)
         {
-            return new OpensearchJsonFormatter(
+            return new OpenSearchJsonFormatter(
                 formatProvider: options.FormatProvider,
                 closingDelimiter: string.Empty,
                 serializer: options.Serializer != null ? new SerializerAdapter(options.Serializer) : null,
@@ -119,9 +119,9 @@ namespace Serilog.Sinks.Opensearch
             );
         }
 
-        public static ITextFormatter CreateDefaultDurableFormatter(OpensearchSinkOptions options)
+        public static ITextFormatter CreateDefaultDurableFormatter(OpenSearchSinkOptions options)
         {
-            return new OpensearchJsonFormatter(
+            return new OpenSearchJsonFormatter(
                formatProvider: options.FormatProvider,
                closingDelimiter: Environment.NewLine,
                serializer: options.Serializer != null ? new SerializerAdapter(options.Serializer) : null,
@@ -253,7 +253,7 @@ namespace Serilog.Sinks.Opensearch
                     _ => throw new NotSupportedException()
                 };
 
-            return OpensearchTemplateProvider.GetTemplate(
+            return OpenSearchTemplateProvider.GetTemplate(
                 _options,
                 _versionManager.EffectiveVersion.Major,
                 settings,

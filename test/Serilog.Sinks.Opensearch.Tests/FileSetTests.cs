@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using FluentAssertions;
-using Serilog.Sinks.Opensearch.Durable;
+using Serilog.Sinks.OpenSearch.Durable;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests;
+namespace Serilog.Sinks.OpenSearch.Tests;
 
 public class FileSetTests : IDisposable
 {

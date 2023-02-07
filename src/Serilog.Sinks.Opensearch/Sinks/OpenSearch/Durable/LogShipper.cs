@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 #endif
 
-namespace Serilog.Sinks.Opensearch.Durable
+namespace Serilog.Sinks.OpenSearch.Durable
 {
     /// <summary>
     /// Reads and sends logdata to log server

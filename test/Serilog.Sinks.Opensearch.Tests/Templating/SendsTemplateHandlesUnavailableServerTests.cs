@@ -4,12 +4,12 @@ using System.Text;
 using FluentAssertions;
 using Xunit;
 using Serilog.Debugging;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 
-namespace Serilog.Sinks.Opensearch.Tests.Templating
+namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
     [Collection("isolation")]
-    public class SendsTemplateHandlesUnavailableServerTests : OpensearchSinkTestsBase
+    public class SendsTemplateHandlesUnavailableServerTests : OpenSearchSinkTestsBase
     {
         [Fact]
         public void Should_not_crash_when_server_is_unavailable()
@@ -35,7 +35,7 @@ namespace Serilog.Sinks.Opensearch.Tests.Templating
         private static ILogger CreateLoggerThatCrashes()
         {
             var loggerConfig = new LoggerConfiguration()
-                .WriteTo.Opensearch(new OpensearchSinkOptions(new Uri("http://localhost:9199"))
+                .WriteTo.OpenSearch(new OpenSearchSinkOptions(new Uri("http://localhost:9199"))
                 {
                     AutoRegisterTemplate = true,
                     TemplateName = "crash"

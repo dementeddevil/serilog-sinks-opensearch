@@ -3,12 +3,12 @@ using System.Linq;
 using FluentAssertions;
 using Serilog.Events;
 using Serilog.Parsing;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class BulkActionTests : OpensearchSinkTestsBase
+    public class BulkActionTests : OpenSearchSinkTestsBase
     {
         [Fact(Skip = "Flaky test on GitHub actions")]
         public void DefaultBulkActionV7()
@@ -16,7 +16,7 @@ namespace Serilog.Sinks.Opensearch.Tests
             _options.IndexFormat = "logs";
             _options.TypeName = "_doc";
             _options.PipelineName = null;
-            using (var sink = new OpensearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(ADummyLogEvent());
                 sink.Emit(ADummyLogEvent());
@@ -34,7 +34,7 @@ namespace Serilog.Sinks.Opensearch.Tests
             _options.TypeName = null; // This is the default value, starting v9.0.0
             _options.AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.OSv1;
             _options.PipelineName = null;
-            using (var sink = new OpensearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(ADummyLogEvent());
                 sink.Emit(ADummyLogEvent());
@@ -51,7 +51,7 @@ namespace Serilog.Sinks.Opensearch.Tests
             _options.IndexFormat = "logs";
             _options.TypeName = null;
             _options.PipelineName = null;
-            using (var sink = new OpensearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(ADummyLogEvent());
                 sink.Emit(ADummyLogEvent());
@@ -71,7 +71,7 @@ namespace Serilog.Sinks.Opensearch.Tests
             _options.PipelineName = null;
             _options.BatchAction = OpenOpType.Create;
             
-            using (var sink = new OpensearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(ADummyLogEvent());
                 sink.Emit(ADummyLogEvent());
@@ -90,7 +90,7 @@ namespace Serilog.Sinks.Opensearch.Tests
             _options.PipelineName = "my-pipeline";
             _options.BatchAction = OpenOpType.Index;
             
-            using (var sink = new OpensearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(ADummyLogEvent());
                 sink.Emit(ADummyLogEvent());

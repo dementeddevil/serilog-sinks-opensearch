@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using OpenSearch.Net;
 using System.Threading;
 
-namespace Serilog.Sinks.Opensearch.Tests.Stubs
+namespace Serilog.Sinks.OpenSearch.Tests.Stubs
 {
     internal class ConnectionStub : InMemoryConnection
     {

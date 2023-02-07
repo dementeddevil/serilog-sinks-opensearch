@@ -5,12 +5,12 @@ using System.IO;
 using System.Linq;
 using OpenSearch.Net;
 
-namespace Serilog.Sinks.Opensearch.Durable
+namespace Serilog.Sinks.OpenSearch.Durable
 {
     /// <summary>
     /// 
     /// </summary>
-    public class OpensearchPayloadReader: APayloadReader<List<string>>
+    public class OpenSearchPayloadReader: APayloadReader<List<string>>
     {
         private readonly string _pipelineName;
         private readonly string _typeName;
@@ -31,7 +31,7 @@ namespace Serilog.Sinks.Opensearch.Durable
         /// <param name="getIndexForEvent"></param>
         /// <param name="elasticOpType"></param>
         /// <param name="rollingInterval"></param>
-        public OpensearchPayloadReader(string pipelineName, string typeName, Func<object, string> serialize,
+        public OpenSearchPayloadReader(string pipelineName, string typeName, Func<object, string> serialize,
             Func<string, DateTime, string> getIndexForEvent, OpenOpType elasticOpType, RollingInterval rollingInterval)
         {
             if ((int)rollingInterval < (int)RollingInterval.Day)
@@ -92,7 +92,7 @@ namespace Serilog.Sinks.Opensearch.Durable
         protected override void AddToPayLoad(string nextLine)
         {
             var indexName = _getIndexForEvent(nextLine, _date);
-            var action = BatchedOpensearchSink.CreateOpenSearchAction(
+            var action = BatchedOpenSearchSink.CreateOpenSearchAction(
                 opType: _elasticOpType, 
                 indexName: indexName, pipelineName: _pipelineName,
                 id: _count + "_" + Guid.NewGuid(),

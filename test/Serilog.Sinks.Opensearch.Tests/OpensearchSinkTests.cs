@@ -1,11 +1,11 @@
 ﻿using OpenSearch.Net;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using System.Text;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    //public class OpensearchSinkTests
+    //public class OpenSearchSinkTests
     //{
     //    [Theory]
     //    [InlineData("8.0.0", "my-logevent", null)]
@@ -14,17 +14,17 @@ namespace Serilog.Sinks.Opensearch.Tests
     //    [InlineData("8.0.0", null, null)]
     //    [InlineData("7.17.5", null, null)]
     //    [InlineData("6.8.1", null, "logevent")]
-    //    public void Ctor_DetectOpensearchVersionSetToTrue_SetsTypeName(string elasticVersion, string configuredTypeName, string expectedTypeName)
+    //    public void Ctor_DetectOpenSearchVersionSetToTrue_SetsTypeName(string elasticVersion, string configuredTypeName, string expectedTypeName)
     //    {
     //        /* ARRANGE */
-    //        var options = new OpensearchSinkOptions
+    //        var options = new OpenSearchSinkOptions
     //        {
     //            Connection = FakeProductCheckResponse(elasticVersion),
     //            TypeName = configuredTypeName
     //        };
 
     //        /* ACT */
-    //        _ = OpensearchSinkState.Create(options);
+    //        _ = OpenSearchSinkState.Create(options);
 
     //        /* Assert */
     //        Assert.Equal(expectedTypeName, options.TypeName);
@@ -37,18 +37,18 @@ namespace Serilog.Sinks.Opensearch.Tests
     //    [InlineData("8.0.0", null, null)]
     //    [InlineData("7.17.5", null, null)]
     //    [InlineData("6.8.1", null, null)]
-    //    public void Ctor_DetectOpensearchVersionSetToFalseAssumesVersion7_SetsTypeNameToNull(string elasticVersion, string configuredTypeName, string expectedTypeName)
+    //    public void Ctor_DetectOpenSearchVersionSetToFalseAssumesVersion7_SetsTypeNameToNull(string elasticVersion, string configuredTypeName, string expectedTypeName)
     //    {
     //        /* ARRANGE */
-    //        var options = new OpensearchSinkOptions
+    //        var options = new OpenSearchSinkOptions
     //        {
     //            Connection = FakeProductCheckResponse(elasticVersion),
-    //            DetectOpensearchVersion = false,
+    //            DetectOpenSearchVersion = false,
     //            TypeName = configuredTypeName
     //        };
 
     //        /* ACT */
-    //        _ = OpensearchSinkState.Create(options);
+    //        _ = OpenSearchSinkState.Create(options);
 
     //        /* Assert */
     //        Assert.Equal(expectedTypeName, options.TypeName);
@@ -61,13 +61,13 @@ namespace Serilog.Sinks.Opensearch.Tests
     //    [InlineData("8.0.0", null, null)]
     //    [InlineData("7.17.5", null, null)]
     //    [InlineData("6.8.1", null, "logevent")]
-    //    public void CreateLogger_DetectOpensearchVersionSetToTrue_SetsTypeName(string elasticVersion, string configuredTypeName, string expectedTypeName)
+    //    public void CreateLogger_DetectOpenSearchVersionSetToTrue_SetsTypeName(string elasticVersion, string configuredTypeName, string expectedTypeName)
     //    {
     //        /* ARRANGE */
-    //        var options = new OpensearchSinkOptions
+    //        var options = new OpenSearchSinkOptions
     //        {
     //            Connection = FakeProductCheckResponse(elasticVersion),
-    //            DetectOpensearchVersion = true,
+    //            DetectOpenSearchVersion = true,
     //            TypeName = configuredTypeName
     //        };
 
@@ -75,7 +75,7 @@ namespace Serilog.Sinks.Opensearch.Tests
     //            .MinimumLevel.Debug()
     //            .Enrich.WithMachineName()
     //            .WriteTo.Console()
-    //            .WriteTo.Opensearch(options);
+    //            .WriteTo.OpenSearch(options);
 
     //        /* ACT */
     //        _ = loggerConfig.CreateLogger();

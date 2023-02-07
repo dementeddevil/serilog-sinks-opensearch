@@ -23,13 +23,13 @@ using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Sinks.PeriodicBatching;
 
-namespace Serilog.Sinks.Opensearch
+namespace Serilog.Sinks.OpenSearch
 {
-    public sealed class OpensearchSink : PeriodicBatchingSink
+    public sealed class OpenSearchSink : PeriodicBatchingSink
     {
-        public OpensearchSink(OpensearchSinkOptions options)
+        public OpenSearchSink(OpenSearchSinkOptions options)
             : this(
-                  new BatchedOpensearchSink(options),
+                  new BatchedOpenSearchSink(options),
                   new PeriodicBatchingSinkOptions
                     {
                         BatchSizeLimit = options.BatchPostingLimit,
@@ -41,22 +41,22 @@ namespace Serilog.Sinks.Opensearch
         {
         }
 
-        private OpensearchSink(IBatchedLogEventSink batchedSink, PeriodicBatchingSinkOptions options)
+        private OpenSearchSink(IBatchedLogEventSink batchedSink, PeriodicBatchingSinkOptions options)
             : base(batchedSink, options)
         {
         }
     }
 
     /// <summary>
-    /// Writes log events as documents to Opensearch.
+    /// Writes log events as documents to OpenSearch.
     /// </summary>
-    internal sealed class BatchedOpensearchSink : IBatchedLogEventSink
+    internal sealed class BatchedOpenSearchSink : IBatchedLogEventSink
     {
-        private readonly OpensearchSinkState _state;
+        private readonly OpenSearchSinkState _state;
 
-        public BatchedOpensearchSink(OpensearchSinkOptions options)
+        public BatchedOpenSearchSink(OpenSearchSinkOptions options)
         {
-            _state = OpensearchSinkState.Create(options);
+            _state = OpenSearchSinkState.Create(options);
             _state.RegisterTemplateIfNeeded();
         }
 
@@ -95,7 +95,7 @@ namespace Serilog.Sinks.Opensearch
         /// Emit a batch of log events, running to completion synchronously.
         /// </summary>
         /// <param name="events">The events to emit.</param>
-        /// <returns>Response from Opensearch</returns>
+        /// <returns>Response from OpenSearch</returns>
         private Task<T> EmitBatchCheckedAsync<T>(IEnumerable<LogEvent> events) where T : class, IOpenSearchResponse, new()
         {
             // ReSharper disable PossibleMultipleEnumeration
@@ -116,7 +116,7 @@ namespace Serilog.Sinks.Opensearch
             if (_state.Options.EmitEventFailure.HasFlag(EmitEventFailureHandling.WriteToSelfLog))
             {
                 // ES reports an error, output the error to the selflog
-                SelfLog.WriteLine("Caught exception while performing bulk operation to Opensearch: {0}", ex);
+                SelfLog.WriteLine("Caught exception while performing bulk operation to OpenSearch: {0}", ex);
             }
             if (_state.Options.EmitEventFailure.HasFlag(EmitEventFailureHandling.WriteToFailureSink) &&
                 _state.Options.FailureSink != null)
@@ -207,7 +207,7 @@ namespace Serilog.Sinks.Opensearch
                         {
                             // ES reports an error, output the error to the selflog
                             SelfLog.WriteLine(
-                                "Failed to store event with template '{0}' into Opensearch. Opensearch reports for index {1} the following: {2}",
+                                "Failed to store event with template '{0}' into OpenSearch. OpenSearch reports for index {1} the following: {2}",
                                 e.MessageTemplate,
                                 action["_index"],
                                 _state.Serialize(action["error"]));

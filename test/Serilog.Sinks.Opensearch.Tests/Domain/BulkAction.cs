@@ -4,10 +4,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Serilog.Events;
 
-namespace Serilog.Sinks.Opensearch.Tests.Domain
+namespace Serilog.Sinks.OpenSearch.Tests.Domain
 {
     /// <summary>
-    /// Opensearch _bulk follows a specific pattern:
+    /// OpenSearch _bulk follows a specific pattern:
     /// {operation}\n
     /// {operationmetadata}\n
     /// This provides a marker interface for both
@@ -28,7 +28,7 @@ namespace Serilog.Sinks.Opensearch.Tests.Domain
         public string Type { get; set; }
     }
 
-    public class SerilogOpensearchEvent : IBulkData
+    public class SerilogOpenSearchEvent : IBulkData
     {
         [JsonProperty("@timestamp")]
         public DateTime Timestamp { get; set; }
@@ -44,10 +44,10 @@ namespace Serilog.Sinks.Opensearch.Tests.Domain
         public string Message { get; set; }
 
         [JsonProperty("exceptions")]
-        public List<SerilogOpensearchExceptionInfo> Exceptions { get; set; }
+        public List<SerilogOpenSearchExceptionInfo> Exceptions { get; set; }
     }
 
-    public class SerilogOpensearchExceptionInfo
+    public class SerilogOpenSearchExceptionInfo
     {
         public int Depth { get; set; }
         public string ClassName { get; set; }

@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-    <AssemblyName>Serilog.Sinks.Opensearch.Tests</AssemblyName>
-    <PackageId>Serilog.Sinks.Opensearch.Tests</PackageId>
+    <AssemblyName>Serilog.Sinks.OpenSearch.Tests</AssemblyName>
+    <PackageId>Serilog.Sinks.OpenSearch.Tests</PackageId>
 
     <DebugSymbols>True</DebugSymbols>
     <LangVersion>latest</LangVersion>
@@ -49,8 +49,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Serilog.Formatting.Opensearch\Serilog.Formatting.Opensearch.csproj" />
-    <ProjectReference Include="..\..\src\Serilog.Sinks.Opensearch\Serilog.Sinks.Opensearch.csproj" />
+    <ProjectReference Include="..\..\src\Serilog.Formatting.OpenSearch\Serilog.Formatting.OpenSearch.csproj" />
+    <ProjectReference Include="..\..\src\Serilog.Sinks.OpenSearch\Serilog.Sinks.OpenSearch.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,7 +63,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Opensearch.Net" Version="1.2.0" />
+    <PackageReference Include="OpenSearch.Net" Version="1.2.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
     <PackageReference Include="FluentAssertions" Version="6.9.0" />
     <PackageReference Include="coverlet.msbuild" Version="3.2.0" PrivateAssets="all" />

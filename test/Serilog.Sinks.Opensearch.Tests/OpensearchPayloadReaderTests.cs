@@ -2,17 +2,17 @@
 using System.IO;
 using System.Text;
 using FluentAssertions;
-using Serilog.Sinks.Opensearch.Durable;
+using Serilog.Sinks.OpenSearch.Durable;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests;
+namespace Serilog.Sinks.OpenSearch.Tests;
 
-public class OpensearchPayloadReaderTests : IDisposable
+public class OpenSearchPayloadReaderTests : IDisposable
 {
     private readonly string _tempFileFullPathTemplate;
     private string _bufferFileName;
 
-    public OpensearchPayloadReaderTests()
+    public OpenSearchPayloadReaderTests()
     {
         _tempFileFullPathTemplate = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")) + "-{0}.json";
     }
@@ -33,7 +33,7 @@ public class OpensearchPayloadReaderTests : IDisposable
     {
         // Arrange
         var format = rollingInterval.GetFormat();
-        var payloadReader = new OpensearchPayloadReader("testPipelineName",
+        var payloadReader = new OpenSearchPayloadReader("testPipelineName",
             "TestTypeName",
             null,
             (_, _) => "TestIndex",
@@ -67,12 +67,12 @@ public class OpensearchPayloadReaderTests : IDisposable
     [InlineData(RollingInterval.Infinite)]
     [InlineData(RollingInterval.Year)]
     [InlineData(RollingInterval.Month)]
-    public void OpensearchPayloadReader_CannotUseRollingIntervalLessFrequentThanDay(RollingInterval rollingInterval)
+    public void OpenSearchPayloadReader_CannotUseRollingIntervalLessFrequentThanDay(RollingInterval rollingInterval)
     {
         // Arrange
 
         // Act
-        Action act = () => new OpensearchPayloadReader("testPipelineName",
+        Action act = () => new OpenSearchPayloadReader("testPipelineName",
             "TestTypeName",
             null,
             (_, _) => "TestIndex",

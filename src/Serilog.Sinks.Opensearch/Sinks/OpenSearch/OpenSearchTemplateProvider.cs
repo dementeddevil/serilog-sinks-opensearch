@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Serilog.Sinks.Opensearch
+namespace Serilog.Sinks.OpenSearch
 {
     /// <summary>
     ///
@@ -9,11 +9,11 @@ namespace Serilog.Sinks.Opensearch
     public enum AutoRegisterTemplateVersion
     {
         /// <summary>
-        /// Opensearch version &gt;= version 1.0
+        /// OpenSearch version &gt;= version 1.0
         /// </summary>
         OSv1 = 1,
         /// <summary>
-        /// Opensearch version &gt;= version 2.0
+        /// OpenSearch version &gt;= version 2.0
         /// </summary>
         OSv2 = 2,
     }
@@ -21,9 +21,9 @@ namespace Serilog.Sinks.Opensearch
     /// <summary>
     ///
     /// </summary>
-    public class OpensearchTemplateProvider
+    public class OpenSearchTemplateProvider
     {        
-        public static object GetTemplate(OpensearchSinkOptions options,
+        public static object GetTemplate(OpenSearchSinkOptions options,
             int discoveredMajorVersion,
             Dictionary<string, string> settings,
             string templateMatchString,
@@ -39,7 +39,7 @@ namespace Serilog.Sinks.Opensearch
             }
         }
 
-        private static object GetTemplateOSv1(OpensearchSinkOptions options, int discoveredMajorVersion,
+        private static object GetTemplateOSv1(OpenSearchSinkOptions options, int discoveredMajorVersion,
             Dictionary<string, string> settings,
             string templateMatchString)
         {

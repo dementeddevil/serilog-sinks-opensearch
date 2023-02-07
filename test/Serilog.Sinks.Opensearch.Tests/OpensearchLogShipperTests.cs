@@ -1,15 +1,15 @@
-﻿using Serilog.Sinks.Opensearch.Tests.Stubs;
+﻿using Serilog.Sinks.OpenSearch.Tests.Stubs;
 
-namespace Serilog.Sinks.Opensearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class OpensearchLogShipperTests : OpensearchSinkTestsBase
+    public class OpenSearchLogShipperTests : OpenSearchSinkTestsBase
     {
         //To enable tests :
-        // * Create public key token for Testproject, make Serilog.Sinks.Opensearch internals visible to testproject & scope OpensearchLogShipper to internal.
-        // * or make OpensearchLogShipper (temporarily) public.
+        // * Create public key token for Testproject, make Serilog.Sinks.OpenSearch internals visible to testproject & scope OpenSearchLogShipper to internal.
+        // * or make OpenSearchLogShipper (temporarily) public.
 
         //[Fact]
-        //public void OpensearchLogShipper_TryReadLineShouldReadWithBOM()
+        //public void OpenSearchLogShipper_TryReadLineShouldReadWithBOM()
         //{
         //    bool withBom = true;
 
@@ -26,18 +26,18 @@ namespace Serilog.Sinks.Opensearch.Tests
         //        string nextLine;
         //        long nextStart = 0;
 
-        //        OpensearchLogShipper.TryReadLine(s, ref nextStart, out nextLine);
+        //        OpenSearchLogShipper.TryReadLine(s, ref nextStart, out nextLine);
 
         //        Assert.Equal(Encoding.UTF8.GetByteCount(testLine1) + +Encoding.UTF8.GetByteCount(Environment.NewLine) + 3, nextStart);
         //        Assert.Equal(testLine1, nextLine);
 
-        //        OpensearchLogShipper.TryReadLine(s, ref nextStart, out nextLine);
+        //        OpenSearchLogShipper.TryReadLine(s, ref nextStart, out nextLine);
         //        Assert.Equal(testLine2, nextLine);
         //    }
         //}
 
         //[Fact]
-        //public void OpensearchLogShipper_TryReadLineShouldReadWithoutBOM()
+        //public void OpenSearchLogShipper_TryReadLineShouldReadWithoutBOM()
         //{
         //    bool withBom = false;
 
@@ -55,19 +55,19 @@ namespace Serilog.Sinks.Opensearch.Tests
         //        string nextLine;
         //        long nextStart = 0;
 
-        //        OpensearchLogShipper.TryReadLine(s, ref nextStart, out nextLine);
+        //        OpenSearchLogShipper.TryReadLine(s, ref nextStart, out nextLine);
 
         //        Assert.Equal(Encoding.UTF8.GetByteCount(testLine1) + Encoding.UTF8.GetByteCount(Environment.NewLine), nextStart);
         //        Assert.Equal(testLine1, nextLine);
 
-        //        OpensearchLogShipper.TryReadLine(s, ref nextStart, out nextLine);
+        //        OpenSearchLogShipper.TryReadLine(s, ref nextStart, out nextLine);
         //        Assert.Equal(testLine2, nextLine);
 
         //    }
         //}
 
         //[Fact]
-        //public void OpensearchLogShipper_CreatePayLoad_ShouldSkipOversizedEvent()
+        //public void OpenSearchLogShipper_CreatePayLoad_ShouldSkipOversizedEvent()
         //{
         //    var selfLogMessages = new StringBuilder();
         //    SelfLog.Enable(new StringWriter(selfLogMessages));
@@ -87,11 +87,11 @@ namespace Serilog.Sinks.Opensearch.Tests
         //        sw.WriteLine(testLine3);
         //        sw.Flush();
 
-        //        (new OpensearchLogShipper(_options)).CreatePayLoad(s, payLoad, "TestIndex", startPosition, "D:\\TestFile");
+        //        (new OpenSearchLogShipper(_options)).CreatePayLoad(s, payLoad, "TestIndex", startPosition, "D:\\TestFile");
 
         //        var expectedNumberOfLines = 2;
         //        Assert.Equal(expectedNumberOfLines*2, payLoad.Count());
-        //        Assert.Contains("Skip sending to Opensearch", selfLogMessages.ToString());
+        //        Assert.Contains("Skip sending to OpenSearch", selfLogMessages.ToString());
         //    }
         //}
     }

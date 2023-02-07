@@ -4,11 +4,11 @@ using FluentAssertions;
 using Xunit;
 using Serilog.Events;
 using Serilog.Parsing;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 
-namespace Serilog.Sinks.Opensearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class IndexDeciderTests : OpensearchSinkTestsBase
+    public class IndexDeciderTests : OpenSearchSinkTestsBase
     {
         [Fact]
         public void IndexDecider_EndsUpInTheOutput()
@@ -18,7 +18,7 @@ namespace Serilog.Sinks.Opensearch.Tests
             const string messageTemplate = "{Song}++ @{Complex}";
             var template = new MessageTemplateParser().Parse(messageTemplate);
             _options.IndexDecider = (l, utcTime) => string.Format("logstash-{1}-{0:yyyy.MM.dd}", utcTime, l.Level.ToString().ToLowerInvariant());
-            using (var sink = new OpensearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 var properties = new List<LogEventProperty> { new LogEventProperty("Song", new ScalarValue("New Macabre")) };
                 var e = new LogEvent(timestamp, LogEventLevel.Information, null, template, properties);

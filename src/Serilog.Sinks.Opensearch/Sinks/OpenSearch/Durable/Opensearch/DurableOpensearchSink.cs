@@ -19,24 +19,24 @@ using Serilog.Core;
 using Serilog.Events;
 
 
-namespace Serilog.Sinks.Opensearch.Durable
+namespace Serilog.Sinks.OpenSearch.Durable
 {
-    class DurableOpensearchSink : ILogEventSink, IDisposable
+    class DurableOpenSearchSink : ILogEventSink, IDisposable
     {
         // we rely on the date in the filename later!
         const string FileNameSuffix = "-.json";
 
         readonly Logger _sink;
         readonly LogShipper<List<string>> _shipper;
-        readonly OpensearchSinkState _state;
+        readonly OpenSearchSinkState _state;
 
-        public DurableOpensearchSink(OpensearchSinkOptions options)
+        public DurableOpenSearchSink(OpenSearchSinkOptions options)
         {
-            _state = OpensearchSinkState.Create(options);
+            _state = OpenSearchSinkState.Create(options);
 
             if (string.IsNullOrWhiteSpace(options.BufferBaseFilename))
             {
-                throw new ArgumentException("Cannot create the durable Opensearch sink without a buffer base file name!");
+                throw new ArgumentException("Cannot create the durable OpenSearch sink without a buffer base file name!");
             }
 
             _sink = new LoggerConfiguration()
@@ -51,12 +51,12 @@ namespace Serilog.Sinks.Opensearch.Durable
                     encoding: Encoding.UTF8)
                 .CreateLogger();
             
-            var opensearchLogClient = new OpensearchLogClient(
+            var opensearchLogClient = new OpenSearchLogClient(
                 openSearchLowLevelClient: _state.Client, 
                 cleanPayload: _state.Options.BufferCleanPayload,
                 elasticOpType: _state.Options.BatchAction);
 
-            var payloadReader = new OpensearchPayloadReader(
+            var payloadReader = new OpenSearchPayloadReader(
                  pipelineName: _state.Options.PipelineName,  
                  typeName:_state.Options.TypeName, 
                  serialize:_state.Serialize,  
@@ -64,7 +64,7 @@ namespace Serilog.Sinks.Opensearch.Durable
                  elasticOpType: _state.Options.BatchAction,
                  rollingInterval: options.BufferFileRollingInterval);
 
-            _shipper = new OpensearchLogShipper(
+            _shipper = new OpenSearchLogShipper(
                 bufferBaseFilename: _state.Options.BufferBaseFilename,
                 batchPostingLimit: _state.Options.BatchPostingLimit,
                 period: _state.Options.BufferLogShippingInterval ?? TimeSpan.FromSeconds(5),

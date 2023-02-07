@@ -1,11 +1,11 @@
 ﻿using System;
 using FluentAssertions;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests.Templating
+namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
-    public class DoNotRegisterIfTemplateExistsTests : OpensearchSinkTestsBase
+    public class DoNotRegisterIfTemplateExistsTests : OpenSearchSinkTestsBase
     {
         private void DoRegister()
         {
@@ -16,7 +16,7 @@ namespace Serilog.Sinks.Opensearch.Tests.Templating
                 .MinimumLevel.Debug()
                 .Enrich.WithMachineName()
                 .WriteTo.Console()
-                .WriteTo.Opensearch(_options);
+                .WriteTo.OpenSearch(_options);
 
             var logger = loggerConfig.CreateLogger();
             using (logger as IDisposable)

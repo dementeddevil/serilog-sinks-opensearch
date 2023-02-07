@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Serilog.Events;
 using Serilog.Parsing;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class CustomIndexTypeNameTests : OpensearchSinkTestsBase
+    public class CustomIndexTypeNameTests : OpenSearchSinkTestsBase
     {
         public CustomIndexTypeNameTests()
         {
@@ -23,7 +23,7 @@ namespace Serilog.Sinks.Opensearch.Tests
             var template = new MessageTemplateParser().Parse(messageTemplate);
             _options.TypeName = "custom-event-type";
             _options.IndexFormat = "event-index-{0:yyyy.MM.dd}";
-            using (var sink = new OpensearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 var properties = new List<LogEventProperty> { new LogEventProperty("Song", new ScalarValue("New Macabre")) };
                 var e = new LogEvent(timestamp, LogEventLevel.Information, null, template, properties);
@@ -64,7 +64,7 @@ namespace Serilog.Sinks.Opensearch.Tests
             var template = new MessageTemplateParser().Parse(messageTemplate);
             _options.TypeName = "custom-event-type";
             _options.IndexFormat = "Event-Index-{0:yyyy.MM.dd}";
-            using (var sink = new OpensearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 var properties = new List<LogEventProperty> { new LogEventProperty("Song", new ScalarValue("New Macabre")) };
                 var e = new LogEvent(timestamp, LogEventLevel.Information, null, template, properties);

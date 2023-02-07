@@ -12,7 +12,7 @@ using Serilog.Formatting.Json;
 using Serilog.Sinks.File;
 using Serilog.Sinks.SystemConsole.Themes;
 
-namespace Serilog.Sinks.Opensearch.Sample
+namespace Serilog.Sinks.OpenSearch.Sample
 {
     class Program
     {
@@ -30,22 +30,24 @@ namespace Serilog.Sinks.Opensearch.Sample
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.Console(theme: SystemConsoleTheme.Literate)
-                .WriteTo.Opensearch(new OpensearchSinkOptions(new Uri(Configuration.GetConnectionString("opensearch"))) // for the docker-compose implementation
-                {
-                    AutoRegisterTemplate = true,
-                    OverwriteTemplate = true,
-                    DetectOpensearchVersion = true,
-                    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.OSv1,
-                    NumberOfReplicas = 1,
-                    NumberOfShards = 2,
-                    //BufferBaseFilename = "./buffer",
-                   // RegisterTemplateFailure = RegisterTemplateRecovery.FailSink,
-                    FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
-                    EmitEventFailure = EmitEventFailureHandling.WriteToSelfLog |
-                                       EmitEventFailureHandling.WriteToFailureSink |
-                                       EmitEventFailureHandling.RaiseCallback,
-                    FailureSink = new FileSink("./fail-{Date}.txt", new JsonFormatter(), null, null)
-                })
+                .WriteTo.OpenSearch(
+                    new OpenSearchSinkOptions(new Uri(Configuration.GetConnectionString("opensearch"))) // for the docker-compose implementation
+                    {
+                        IndexFormat = "umpg-uppm-sample",
+                        AutoRegisterTemplate = true,
+                        OverwriteTemplate = true,
+                        DetectOpenSearchVersion = true,
+                        AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.OSv1,
+                        NumberOfReplicas = 1,
+                        NumberOfShards = 2,
+                        //BufferBaseFilename = "./buffer",
+                       // RegisterTemplateFailure = RegisterTemplateRecovery.FailSink,
+                        FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
+                        EmitEventFailure = EmitEventFailureHandling.WriteToSelfLog |
+                                           EmitEventFailureHandling.WriteToFailureSink |
+                                           EmitEventFailureHandling.RaiseCallback,
+                        FailureSink = new FileSink("./fail-{Date}.txt", new JsonFormatter(), null, null)
+                    })
                 .CreateLogger();
 
             Log.Information("Hello, world!");

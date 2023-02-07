@@ -1,16 +1,16 @@
-# Serilog.Sinks.Opensearch [![Continuous Integration](https://github.com/serilog-contrib/serilog-sinks-opensearch/actions/workflows/cicd.yaml/badge.svg?branch=dev)](https://github.com/serilog-contrib/serilog-sinks-opensearch/actions/workflows/cicd.yaml) [![NuGet Badge](https://img.shields.io/nuget/v/Serilog.Sinks.Opensearch.svg)](https://www.nuget.org/packages/Serilog.Sinks.Opensearch)
+# Serilog.Sinks.OpenSearch [![Continuous Integration](https://github.com/serilog-contrib/serilog-sinks-opensearch/actions/workflows/cicd.yaml/badge.svg?branch=dev)](https://github.com/serilog-contrib/serilog-sinks-opensearch/actions/workflows/cicd.yaml) [![NuGet Badge](https://img.shields.io/nuget/v/Serilog.Sinks.OpenSearch.svg)](https://www.nuget.org/packages/Serilog.Sinks.OpenSearch)
 
-This repository contains two nuget packages: `Serilog.Sinks.Opensearch` and `Serilog.Formatting.Opensearch`.
+This repository contains two nuget packages: `Serilog.Sinks.OpenSearch` and `Serilog.Formatting.OpenSearch`.
 
 ## Table of contents
 
 * [What is this sink](#what-is-this-sink)
 * [Features](#features)
 * [Quick start](#quick-start)
-  * [Opensearch sinks](#opensearch-sinks)
-  * [Opensearch formatters](#opensearch-formatters)
+  * [OpenSearch sinks](#opensearch-sinks)
+  * [OpenSearch formatters](#opensearch-formatters)
 * [More information](#more-information)
-  * [A note about fields inside Opensearch](#a-note-about-fields-inside-opensearch)
+  * [A note about fields inside OpenSearch](#a-note-about-fields-inside-opensearch)
   * [A note about Kibana](#a-note-about-kibana)
   * [JSON `appsettings.json` configuration](#json-appsettingsjson-configuration)
   * [Handling errors](#handling-errors)
@@ -18,21 +18,21 @@ This repository contains two nuget packages: `Serilog.Sinks.Opensearch` and `Ser
 
 ## What is this sink
 
-The Serilog Opensearch sink project is a sink (basically a writer) for the Serilog logging framework. Structured log events are written to sinks and each sink is responsible for writing it to its own backend, database, store etc. This sink delivers the data to Opensearch, a NoSQL search engine. It does this in a similar structure as Logstash and makes it easy to use Kibana for visualizing your logs.
+The Serilog OpenSearch sink project is a sink (basically a writer) for the Serilog logging framework. Structured log events are written to sinks and each sink is responsible for writing it to its own backend, database, store etc. This sink delivers the data to OpenSearch, a NoSQL search engine. It does this in a similar structure as Logstash and makes it easy to use Kibana for visualizing your logs.
 
 ## Features
 
-* Simple configuration to get log events published to Opensearch. Only server address is needed.
+* Simple configuration to get log events published to OpenSearch. Only server address is needed.
 * All properties are stored inside fields in ES. This allows you to query on all the relevant data but also run analytics over this data.
 * Be able to customize the store; specify the index name being used, the serializer or the connections to the server (load balanced).
 * Durable mode; store the logevents first on disk before delivering them to OS making sure you never miss events if you have trouble connecting to your OS cluster.
 * Automatically create the right mappings for the best usage of the log events in OS or automatically upload your own custom mapping.
-* Versions 1 and 2 of Opensearch supported. Version 1.0.0 of the sink targets netstandard2.0 and therefore can be run on any .NET Framework that supports it (both .NET Core and .NET Framework), however, we are focused on testing it with .NET 6.0 to make the maintenance simpler.
+* Versions 1 and 2 of OpenSearch supported. Version 1.0.0 of the sink targets netstandard2.0 and therefore can be run on any .NET Framework that supports it (both .NET Core and .NET Framework), however, we are focused on testing it with .NET 6.0 to make the maintenance simpler.
 
 
 ## Quick start
 
-### Opensearch sinks
+### OpenSearch sinks
 
 ```powershell
 Install-Package serilog.sinks.opensearch
@@ -42,7 +42,7 @@ Simplest way to register this sink is to use default configuration:
 
 ```csharp
 var loggerConfig = new LoggerConfiguration()
-    .WriteTo.Opensearch(new OpensearchSinkOptions(new Uri("http://localhost:9200")));
+    .WriteTo.OpenSearch(new OpenSearchSinkOptions(new Uri("http://localhost:9200")));
 ```
 
 Or, if using .NET Core and `Serilog.Settings.Configuration` Nuget package and `appsettings.json`, default configuration would look like this:
@@ -50,11 +50,11 @@ Or, if using .NET Core and `Serilog.Settings.Configuration` Nuget package and `a
 ```json
 {
   "Serilog": {
-    "Using": [ "Serilog.Sinks.Opensearch" ],
+    "Using": [ "Serilog.Sinks.OpenSearch" ],
     "MinimumLevel": "Warning",
     "WriteTo": [
       {
-        "Name": "Opensearch",
+        "Name": "OpenSearch",
         "Args": {
           "nodeUris": "http://localhost:9200"
         }
@@ -73,11 +73,11 @@ More elaborate configuration, using additional Nuget packages (e.g. `Serilog.Enr
 ```json
 {
   "Serilog": {
-    "Using": [ "Serilog.Sinks.Opensearch" ],
+    "Using": [ "Serilog.Sinks.OpenSearch" ],
     "MinimumLevel": "Warning",
     "WriteTo": [
       {
-        "Name": "Opensearch",
+        "Name": "OpenSearch",
         "Args": {
           "nodeUris": "http://localhost:9200"
         }
@@ -91,18 +91,18 @@ More elaborate configuration, using additional Nuget packages (e.g. `Serilog.Enr
 }
 ```
 
-This way the sink will detect version of Opensearch server (`DetectOpensearchVersion` is set to `true` by default) and handle `TypeName` behavior correctly, based on the server version (6.x, 7.x or 8.x).
+This way the sink will detect version of OpenSearch server (`DetectOpenSearchVersion` is set to `true` by default) and handle `TypeName` behavior correctly, based on the server version (6.x, 7.x or 8.x).
 
-### Disable detection of Opensearch server version
+### Disable detection of OpenSearch server version
 
-Alternatively, `DetectOpensearchVersion` can be set to `false` and certain option can be configured manually. In that case, the sink will assume version 7 of Opensearch, but options will be ignored due to a potential version incompatibility.
+Alternatively, `DetectOpenSearchVersion` can be set to `false` and certain option can be configured manually. In that case, the sink will assume version 7 of OpenSearch, but options will be ignored due to a potential version incompatibility.
 
 For example, you can configure the sink to force registeration of v6 index template. Be aware that the AutoRegisterTemplate option will not overwrite an existing template.
 
 ```csharp
 var loggerConfig = new LoggerConfiguration()
-    .WriteTo.Opensearch(new OpensearchSinkOptions(new Uri("http://localhost:9200") ){
-             DetectOpensearchVersion = false,
+    .WriteTo.OpenSearch(new OpenSearchSinkOptions(new Uri("http://localhost:9200") ){
+             DetectOpenSearchVersion = false,
              AutoRegisterTemplate = true,
              AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.OSv1
      });
@@ -116,64 +116,64 @@ This example shows the options that are currently available when using the appSe
 
 ```xml
   <appSettings>
-    <add key="serilog:using" value="Serilog.Sinks.Opensearch"/>
-    <add key="serilog:write-to:Opensearch.nodeUris" value="http://localhost:9200;http://remotehost:9200"/>
-    <add key="serilog:write-to:Opensearch.indexFormat" value="custom-index-{0:yyyy.MM}"/>
-    <add key="serilog:write-to:Opensearch.templateName" value="myCustomTemplate"/>
-    <add key="serilog:write-to:Opensearch.typeName" value="myCustomLogEventType"/>
-    <add key="serilog:write-to:Opensearch.pipelineName" value="myCustomPipelineName"/>
-    <add key="serilog:write-to:Opensearch.batchPostingLimit" value="50"/>
-    <add key="serilog:write-to:Opensearch.batchAction" value="Create"/><!-- "Index" is default -->
-    <add key="serilog:write-to:Opensearch.period" value="2"/>
-    <add key="serilog:write-to:Opensearch.inlineFields" value="true"/>
-    <add key="serilog:write-to:Opensearch.restrictedToMinimumLevel" value="Warning"/>
-    <add key="serilog:write-to:Opensearch.bufferBaseFilename" value="C:\Temp\SerilogElasticBuffer"/>
-    <add key="serilog:write-to:Opensearch.bufferFileSizeLimitBytes" value="5242880"/>
-    <add key="serilog:write-to:Opensearch.bufferLogShippingInterval" value="5000"/>
-    <add key="serilog:write-to:Opensearch.bufferRetainedInvalidPayloadsLimitBytes" value="5000"/>
-    <add key="serilog:write-to:Opensearch.bufferFileCountLimit " value="31"/>
-    <add key="serilog:write-to:Opensearch.connectionGlobalHeaders" value="Authorization=Bearer SOME-TOKEN;OtherHeader=OTHER-HEADER-VALUE" />
-    <add key="serilog:write-to:Opensearch.connectionTimeout" value="5" />
-    <add key="serilog:write-to:Opensearch.emitEventFailure" value="WriteToSelfLog" />
-    <add key="serilog:write-to:Opensearch.queueSizeLimit" value="100000" />
-    <add key="serilog:write-to:Opensearch.autoRegisterTemplate" value="true" />
-    <add key="serilog:write-to:Opensearch.autoRegisterTemplateVersion" value="OSv1" />
-    <add key="serilog:write-to:Opensearch.detectOpensearchVersion" value="false" /><!-- `true` is default -->
-    <add key="serilog:write-to:Opensearch.overwriteTemplate" value="false" />
-    <add key="serilog:write-to:Opensearch.registerTemplateFailure" value="IndexAnyway" />
-    <add key="serilog:write-to:Opensearch.deadLetterIndexName" value="deadletter-{0:yyyy.MM}" />
-    <add key="serilog:write-to:Opensearch.numberOfShards" value="20" />
-    <add key="serilog:write-to:Opensearch.numberOfReplicas" value="10" />
-    <add key="serilog:write-to:Opensearch.formatProvider" value="My.Namespace.MyFormatProvider, My.Assembly.Name" />
-    <add key="serilog:write-to:Opensearch.connection" value="My.Namespace.MyConnection, My.Assembly.Name" />
-    <add key="serilog:write-to:Opensearch.serializer" value="My.Namespace.MySerializer, My.Assembly.Name" />
-    <add key="serilog:write-to:Opensearch.connectionPool" value="My.Namespace.MyConnectionPool, My.Assembly.Name" />
-    <add key="serilog:write-to:Opensearch.customFormatter" value="My.Namespace.MyCustomFormatter, My.Assembly.Name" />
-    <add key="serilog:write-to:Opensearch.customDurableFormatter" value="My.Namespace.MyCustomDurableFormatter, My.Assembly.Name" />
-    <add key="serilog:write-to:Opensearch.failureSink" value="My.Namespace.MyFailureSink, My.Assembly.Name" />
+    <add key="serilog:using" value="Serilog.Sinks.OpenSearch"/>
+    <add key="serilog:write-to:OpenSearch.nodeUris" value="http://localhost:9200;http://remotehost:9200"/>
+    <add key="serilog:write-to:OpenSearch.indexFormat" value="custom-index-{0:yyyy.MM}"/>
+    <add key="serilog:write-to:OpenSearch.templateName" value="myCustomTemplate"/>
+    <add key="serilog:write-to:OpenSearch.typeName" value="myCustomLogEventType"/>
+    <add key="serilog:write-to:OpenSearch.pipelineName" value="myCustomPipelineName"/>
+    <add key="serilog:write-to:OpenSearch.batchPostingLimit" value="50"/>
+    <add key="serilog:write-to:OpenSearch.batchAction" value="Create"/><!-- "Index" is default -->
+    <add key="serilog:write-to:OpenSearch.period" value="2"/>
+    <add key="serilog:write-to:OpenSearch.inlineFields" value="true"/>
+    <add key="serilog:write-to:OpenSearch.restrictedToMinimumLevel" value="Warning"/>
+    <add key="serilog:write-to:OpenSearch.bufferBaseFilename" value="C:\Temp\SerilogElasticBuffer"/>
+    <add key="serilog:write-to:OpenSearch.bufferFileSizeLimitBytes" value="5242880"/>
+    <add key="serilog:write-to:OpenSearch.bufferLogShippingInterval" value="5000"/>
+    <add key="serilog:write-to:OpenSearch.bufferRetainedInvalidPayloadsLimitBytes" value="5000"/>
+    <add key="serilog:write-to:OpenSearch.bufferFileCountLimit " value="31"/>
+    <add key="serilog:write-to:OpenSearch.connectionGlobalHeaders" value="Authorization=Bearer SOME-TOKEN;OtherHeader=OTHER-HEADER-VALUE" />
+    <add key="serilog:write-to:OpenSearch.connectionTimeout" value="5" />
+    <add key="serilog:write-to:OpenSearch.emitEventFailure" value="WriteToSelfLog" />
+    <add key="serilog:write-to:OpenSearch.queueSizeLimit" value="100000" />
+    <add key="serilog:write-to:OpenSearch.autoRegisterTemplate" value="true" />
+    <add key="serilog:write-to:OpenSearch.autoRegisterTemplateVersion" value="OSv1" />
+    <add key="serilog:write-to:OpenSearch.detectOpenSearchVersion" value="false" /><!-- `true` is default -->
+    <add key="serilog:write-to:OpenSearch.overwriteTemplate" value="false" />
+    <add key="serilog:write-to:OpenSearch.registerTemplateFailure" value="IndexAnyway" />
+    <add key="serilog:write-to:OpenSearch.deadLetterIndexName" value="deadletter-{0:yyyy.MM}" />
+    <add key="serilog:write-to:OpenSearch.numberOfShards" value="20" />
+    <add key="serilog:write-to:OpenSearch.numberOfReplicas" value="10" />
+    <add key="serilog:write-to:OpenSearch.formatProvider" value="My.Namespace.MyFormatProvider, My.Assembly.Name" />
+    <add key="serilog:write-to:OpenSearch.connection" value="My.Namespace.MyConnection, My.Assembly.Name" />
+    <add key="serilog:write-to:OpenSearch.serializer" value="My.Namespace.MySerializer, My.Assembly.Name" />
+    <add key="serilog:write-to:OpenSearch.connectionPool" value="My.Namespace.MyConnectionPool, My.Assembly.Name" />
+    <add key="serilog:write-to:OpenSearch.customFormatter" value="My.Namespace.MyCustomFormatter, My.Assembly.Name" />
+    <add key="serilog:write-to:OpenSearch.customDurableFormatter" value="My.Namespace.MyCustomDurableFormatter, My.Assembly.Name" />
+    <add key="serilog:write-to:OpenSearch.failureSink" value="My.Namespace.MyFailureSink, My.Assembly.Name" />
   </appSettings>
 ```
 
-With the appSettings configuration the `nodeUris` property is required. Multiple nodes can be specified using `,` or `;` to separate them. All other properties are optional. Also required is the `<add key="serilog:using" value="Serilog.Sinks.Opensearch"/>` setting to include this sink. All other properties are optional. If you do not explicitly specify an indexFormat-setting, a generic index such as 'logstash-[current_date]' will be used automatically.
+With the appSettings configuration the `nodeUris` property is required. Multiple nodes can be specified using `,` or `;` to separate them. All other properties are optional. Also required is the `<add key="serilog:using" value="Serilog.Sinks.OpenSearch"/>` setting to include this sink. All other properties are optional. If you do not explicitly specify an indexFormat-setting, a generic index such as 'logstash-[current_date]' will be used automatically.
 
 And start writing your events using Serilog.
 
-### Opensearch formatters
+### OpenSearch formatters
 
 ```powershell
 Install-Package serilog.formatting.opensearch
 ```
 
-The `Serilog.Formatting.Opensearch` nuget package consists of a several formatters:
+The `Serilog.Formatting.OpenSearch` nuget package consists of a several formatters:
 
-* `OpensearchJsonFormatter` - custom json formatter that respects the configured property name handling and forces `Timestamp` to @timestamp.
+* `OpenSearchJsonFormatter` - custom json formatter that respects the configured property name handling and forces `Timestamp` to @timestamp.
 * `ExceptionAsObjectJsonFormatter` - a json formatter which serializes any exception into an exception object.
 
 Override default formatter if it's possible with selected sink
 
 ```csharp
 var loggerConfig = new LoggerConfiguration()
-  .WriteTo.Console(new OpensearchJsonFormatter());
+  .WriteTo.Console(new OpenSearchJsonFormatter());
 ```
 
 ## More information
@@ -181,13 +181,13 @@ var loggerConfig = new LoggerConfiguration()
 * [Basic information](https://github.com/serilog/serilog-sinks-opensearch/wiki/basic-setup) on how to configure and use this sink.
 * [Configuration options](https://github.com/serilog/serilog-sinks-opensearch/wiki/Configure-the-sink) which you can use.
 * How to use the [durability](https://github.com/serilog/serilog-sinks-opensearch/wiki/durability) mode.
-* Get the [NuGet package](http://www.nuget.org/packages/Serilog.Sinks.Opensearch).
+* Get the [NuGet package](http://www.nuget.org/packages/Serilog.Sinks.OpenSearch).
 * Report issues to the [issue tracker](https://github.com/serilog/serilog-sinks-opensearch/issues). PR welcome, but please do this against the dev branch.
 * For an overview of recent changes, have a look at the [change log](https://github.com/serilog/serilog-sinks-opensearch/blob/master/CHANGES.md).
 
-### A note about fields inside Opensearch
+### A note about fields inside OpenSearch
 
-Be aware that there is an explicit and implicit mapping of types inside an Opensearch index. A value called `X` as a string will be indexed as being a string. Sending the same `X` as an integer in a next log message will not work. ES will raise a mapping exception, however it is not that evident that your log item was not stored due to the bulk actions performed.
+Be aware that there is an explicit and implicit mapping of types inside an OpenSearch index. A value called `X` as a string will be indexed as being a string. Sending the same `X` as an integer in a next log message will not work. ES will raise a mapping exception, however it is not that evident that your log item was not stored due to the bulk actions performed.
 
 So be careful about defining and using your fields (and type of fields). It is easy to miss that you first send a {User} as a simple username (string) and next as a User object. The first mapping dynamically created in the index wins. See also issue [#184](https://github.com/serilog/serilog-sinks-opensearch/issues/184) for details and a possible solution. There are also limits in ES on the number of dynamic fields you can actually throw inside an index.
 
@@ -202,7 +202,7 @@ exception fields on dashboards and visualizations. Therefore, we provide an alte
 To use it, simply specify it as the `CustomFormatter` when creating the sink:
 
 ```csharp
-    new OpensearchSink(new OpensearchSinkOptions(url)
+    new OpenSearchSink(new OpenSearchSinkOptions(url)
     {
       CustomFormatter = new ExceptionAsObjectJsonFormatter(renderMessage:true)
     });
@@ -210,7 +210,7 @@ To use it, simply specify it as the `CustomFormatter` when creating the sink:
 
 ### JSON `appsettings.json` configuration
 
-To use the Opensearch sink with _Microsoft.Extensions.Configuration_, for example with ASP.NET Core or .NET Core, use the [Serilog.Settings.Configuration](https://github.com/serilog/serilog-settings-configuration) package. First install that package if you have not already done so:
+To use the OpenSearch sink with _Microsoft.Extensions.Configuration_, for example with ASP.NET Core or .NET Core, use the [Serilog.Settings.Configuration](https://github.com/serilog/serilog-settings-configuration) package. First install that package if you have not already done so:
 
 ```powershell
 Install-Package Serilog.Settings.Configuration
@@ -235,7 +235,7 @@ In your `appsettings.json` file, under the `Serilog` node, :
 {
   "Serilog": {
     "WriteTo": [{
-        "Name": "Opensearch",
+        "Name": "OpenSearch",
         "Args": {
           "nodeUris": "http://localhost:9200;http://remotehost:9200/",
           "indexFormat": "custom-index-{0:yyyy.MM}",
@@ -281,18 +281,18 @@ See the XML `<appSettings>` example above for a discussion of available `Args` o
 
 ### Handling errors
 
-From version 5.5 you have the option to specify how to handle issues with Opensearch. Since the sink delivers in a batch, it might be possible that one or more events could actually not be stored in the Opensearch store.
+From version 5.5 you have the option to specify how to handle issues with OpenSearch. Since the sink delivers in a batch, it might be possible that one or more events could actually not be stored in the OpenSearch store.
 Can be a mapping issue for example. It is hard to find out what happened here. There is a new option called *EmitEventFailure* which is an enum (flagged) with the following options:
 
 * WriteToSelfLog, the default option in which the errors are written to the SelfLog.
 * WriteToFailureSink, the failed events are send to another sink. Make sure to configure this one by setting the FailureSink option.
 * ThrowException, in which an exception is raised.
-* RaiseCallback, the failure callback function will be called when the event cannot be submitted to Opensearch. Make sure to set the FailureCallback option to handle the event.
+* RaiseCallback, the failure callback function will be called when the event cannot be submitted to OpenSearch. Make sure to set the FailureCallback option to handle the event.
 
 An example:
 
 ```csharp
-.WriteTo.Opensearch(new OpensearchSinkOptions(new Uri("http://localhost:9200"))
+.WriteTo.OpenSearch(new OpenSearchSinkOptions(new Uri("http://localhost:9200"))
                 {
                     FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
                     EmitEventFailure = EmitEventFailureHandling.WriteToSelfLog |
@@ -302,7 +302,7 @@ An example:
                 })
 ```
 
-With the AutoRegisterTemplate option the sink will write a default template to Opensearch. When this template is not there, you might not want to index as it can influence the data quality.
+With the AutoRegisterTemplate option the sink will write a default template to OpenSearch. When this template is not there, you might not want to index as it can influence the data quality.
 Since version 5.5 you can use the RegisterTemplateFailure option. Set it to one of the following options:
 
 * IndexAnyway; the default option, the events will be send to the server

@@ -1,23 +1,23 @@
 ﻿using System;
 using FluentAssertions;
-using Serilog.Sinks.Opensearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Opensearch.Tests.Templating
+namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
-    public class DiscoverVersionTests : OpensearchSinkTestsBase
+    public class DiscoverVersionTests : OpenSearchSinkTestsBase
     {
         private readonly Tuple<Uri,int> _templateGet;
 
         public DiscoverVersionTests()
         {
-            _options.DetectOpensearchVersion = true;
+            _options.DetectOpenSearchVersion = true;
 
             var loggerConfig = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .Enrich.WithMachineName()
                 .WriteTo.Console()
-                .WriteTo.Opensearch(_options);
+                .WriteTo.OpenSearch(_options);
 
             var logger = loggerConfig.CreateLogger();
             using ((IDisposable) logger)
