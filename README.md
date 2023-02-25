@@ -23,11 +23,11 @@ The Serilog OpenSearch sink project is a sink (basically a writer) for the Seril
 ## Features
 
 * Simple configuration to get log events published to OpenSearch. Only server address is needed.
-* All properties are stored inside fields in ES. This allows you to query on all the relevant data but also run analytics over this data.
+* All properties are stored inside fields in OpenSearch. This allows you to query on all the relevant data but also run analytics over this data.
 * Be able to customize the store; specify the index name being used, the serializer or the connections to the server (load balanced).
 * Durable mode; store the logevents first on disk before delivering them to OS making sure you never miss events if you have trouble connecting to your OS cluster.
 * Automatically create the right mappings for the best usage of the log events in OS or automatically upload your own custom mapping.
-* Versions 1 and 2 of OpenSearch supported. Version 1.0.0 of the sink targets netstandard2.0 and therefore can be run on any .NET Framework that supports it (both .NET Core and .NET Framework), however, we are focused on testing it with .NET 6.0 to make the maintenance simpler.
+* Versions 1 and 2 of OpenSearch supported. Version 1.0.0 of the sink targets netstandard2.0 and therefore can be run on any .NET Framework that supports it (both .NET Core and .NET Framework), however, we are focused on testing it with .NET 6.0/.NET 7.0 to make the maintenance simpler.
 
 
 ## Quick start
@@ -187,9 +187,9 @@ var loggerConfig = new LoggerConfiguration()
 
 ### A note about fields inside OpenSearch
 
-Be aware that there is an explicit and implicit mapping of types inside an OpenSearch index. A value called `X` as a string will be indexed as being a string. Sending the same `X` as an integer in a next log message will not work. ES will raise a mapping exception, however it is not that evident that your log item was not stored due to the bulk actions performed.
+Be aware that there is an explicit and implicit mapping of types inside an OpenSearch index. A value called `X` as a string will be indexed as being a string. Sending the same `X` as an integer in a next log message will not work. OpenSearch will raise a mapping exception, however it is not that evident that your log item was not stored due to the bulk actions performed.
 
-So be careful about defining and using your fields (and type of fields). It is easy to miss that you first send a {User} as a simple username (string) and next as a User object. The first mapping dynamically created in the index wins. See also issue [#184](https://github.com/serilog/serilog-sinks-opensearch/issues/184) for details and a possible solution. There are also limits in ES on the number of dynamic fields you can actually throw inside an index.
+So be careful about defining and using your fields (and type of fields). It is easy to miss that you first send a {User} as a simple username (string) and next as a User object. The first mapping dynamically created in the index wins. There are also limits in OpenSearch on the number of dynamic fields you can actually throw inside an index.
 
 ### A note about Kibana
 
@@ -197,7 +197,7 @@ In order to avoid a potentially deeply nested JSON structure for exceptions with
 by default the logged exception and it's inner exception is logged as an array of exceptions in the field `exceptions`. Use the 'Depth' field to traverse the inner exceptions flow.
 
 However, not all features in Kibana work just as well with JSON arrays - for instance, including
-exception fields on dashboards and visualizations. Therefore, we provide an alternative formatter,  `ExceptionAsObjectJsonFormatter`, which will serialize the exception into the `exception` field as an object with nested `InnerException` properties. This was also the default behavior of the sink before version 2.
+exception fields on dashboards and visualizations. Therefore, we provide an alternative formatter,  `ExceptionAsObjectJsonFormatter`, which will serialize the exception into the `exception` field as an object with nested `InnerException` properties.
 
 To use it, simply specify it as the `CustomFormatter` when creating the sink:
 
@@ -281,8 +281,8 @@ See the XML `<appSettings>` example above for a discussion of available `Args` o
 
 ### Handling errors
 
-From version 5.5 you have the option to specify how to handle issues with OpenSearch. Since the sink delivers in a batch, it might be possible that one or more events could actually not be stored in the OpenSearch store.
-Can be a mapping issue for example. It is hard to find out what happened here. There is a new option called *EmitEventFailure* which is an enum (flagged) with the following options:
+You have the option to specify how to handle issues with OpenSearch. Since the sink delivers in a batch, it might be possible that one or more events could actually not be stored in the OpenSearch store.
+Can be a mapping issue for example. It is hard to find out what happened here. There is an option called *EmitEventFailure* which is an enum (flagged) with the following options:
 
 * WriteToSelfLog, the default option in which the errors are written to the SelfLog.
 * WriteToFailureSink, the failed events are send to another sink. Make sure to configure this one by setting the FailureSink option.
@@ -303,13 +303,13 @@ An example:
 ```
 
 With the AutoRegisterTemplate option the sink will write a default template to OpenSearch. When this template is not there, you might not want to index as it can influence the data quality.
-Since version 5.5 you can use the RegisterTemplateFailure option. Set it to one of the following options:
+You can use the RegisterTemplateFailure option and set it to one of the following options:
 
 * IndexAnyway; the default option, the events will be send to the server
 * IndexToDeadletterIndex; using the deadletterindex format, it will write the events to the deadletter queue. When you fix your template mapping, you can copy your data into the right index.
 * FailSink; this will simply fail the sink by raising an exception.
 
-Since version 7 you can  specify an action to do when log row was denied by the opensearch because of the data (payload) if durable file is specied.
+You can also specify an action to do when log row was denied by OpenSearch because of the data (payload) if durable file is specified.
 i.e.
 
 ```csharp
@@ -328,7 +328,7 @@ BufferCleanPayload = (failingEvent, statuscode, exception) =>
                     },
 ```
 
-The IndexDecider didnt worked well when durable file was specified so an option to specify BufferIndexDecider is added.
+The IndexDecider didn't work well when durable file was specified so an option to specify BufferIndexDecider is added.
 Datatype of logEvent is string
 i.e.
 

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Authors>Michiel van Oudheusden, Martijn Laarman, Mogens Heller Grabe, Serilog Contributors</Authors>
+    <Authors>Adrian Lewis, Michiel van Oudheusden, Martijn Laarman, Mogens Heller Grabe, Serilog Contributors</Authors>
     <Title>Serilog.Sinks.OpenSearch</Title>
     <Description>Serilog sink for OpenSearch</Description>
     <Copyright>Copyright © Serilog Contributors 2023</Copyright>
