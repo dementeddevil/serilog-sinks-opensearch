@@ -12,10 +12,6 @@ namespace Serilog.Sinks.OpenSearch
         /// OpenSearch version &gt;= version 1.0
         /// </summary>
         OSv1 = 1,
-        /// <summary>
-        /// OpenSearch version &gt;= version 2.0
-        /// </summary>
-        OSv2 = 2,
     }
 
     /// <summary>
@@ -23,7 +19,8 @@ namespace Serilog.Sinks.OpenSearch
     /// </summary>
     public class OpenSearchTemplateProvider
     {        
-        public static object GetTemplate(OpenSearchSinkOptions options,
+        public static object GetTemplate(
+            OpenSearchSinkOptions options,
             int discoveredMajorVersion,
             Dictionary<string, string> settings,
             string templateMatchString,
@@ -31,7 +28,6 @@ namespace Serilog.Sinks.OpenSearch
         {
             switch (version)
             {
-                case AutoRegisterTemplateVersion.OSv2:
                 case AutoRegisterTemplateVersion.OSv1:
                     return GetTemplateOSv1(options, discoveredMajorVersion, settings, templateMatchString);
                 default:
@@ -39,7 +35,9 @@ namespace Serilog.Sinks.OpenSearch
             }
         }
 
-        private static object GetTemplateOSv1(OpenSearchSinkOptions options, int discoveredMajorVersion,
+        private static object GetTemplateOSv1(
+            OpenSearchSinkOptions options,
+            int discoveredMajorVersion,
             Dictionary<string, string> settings,
             string templateMatchString)
         {
@@ -122,19 +120,22 @@ namespace Serilog.Sinks.OpenSearch
                     }
                 }
             };
-            //mappings = discoveredMajorVersion == 6 ? new { _doc = mappings } : mappings;
 
             Dictionary<string, object> aliases = new Dictionary<string, object>();
 
             //If index alias or aliases are specified
             if (options.IndexAliases?.Length > 0)
+            {
                 foreach (var alias in options.IndexAliases)
                 {
                     //Added blank object for alias to make look like this in JSON:
                     //"alias_1" : {}
                     aliases.Add(alias, new object());
                 }
+            }
 
+            // TODO: Add support for version, composed_by, priority fields.
+            //  Certainly priority and version can be sourced from new properties in options...
             return new
             {
                 index_patterns = new[] { templateMatchString },

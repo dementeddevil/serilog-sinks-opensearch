@@ -34,14 +34,14 @@ namespace Serilog.Sinks.OpenSearch.Tests.Templating
         [Fact]
         public void ShouldRegisterTheCorrectTemplateOnRegistration()
         {
-            JsonEquals(_templatePut.Item2, "template_v8_no-aliases_0replicas.json");
+            JsonEquals(_templatePut.Item2, "template_v1_no-aliases_0replicas.json");
         }
 
         [Fact]
         public void TemplatePutToCorrectUrl()
         {
             var uri = _templatePut.Item1;
-            uri.AbsolutePath.Should().Be("/_template/serilog-events-template");
+            uri.AbsolutePath.Should().Be("/_index_template/serilog-events-template");
         }
     }
 }

@@ -100,6 +100,8 @@ namespace Serilog.Sinks.OpenSearch
             _versionManager = new OpenSearchVersionManager(options.DetectOpenSearchVersion, _client);
 
             // Resolve typeName (looks like this is removed in all opensearch versions)
+            // Handle version detection now - we can discard the result...
+            var version = _versionManager.EffectiveVersion;
             /*if (_versionManager.EffectiveVersion.Major < 7)
                 _options.TypeName = string.IsNullOrWhiteSpace(_options.TypeName)
                     ? OpenSearchSinkOptions.DefaultTypeName // "logevent"
@@ -160,33 +162,23 @@ namespace Serilog.Sinks.OpenSearch
             {
                 if (!_options.OverwriteTemplate)
                 {
-                    var templateExistsResponse = _client.Indices.TemplateExistsForAll<VoidResponse>(_templateName, new IndexTemplateExistsRequestParameters()
-                    {
-                        RequestConfiguration = new RequestConfiguration() { AllowedStatusCodes = new[] { 200, 404 } }
-                    });
+                    var templateExistsResponse = _client.Indices
+                        .TemplateExistsForAll<VoidResponse>(
+                            _templateName, 
+                            new IndexTemplateExistsRequestParameters
+                            {
+                                RequestConfiguration = new RequestConfiguration() { AllowedStatusCodes = new[] { 200, 404 } }
+                            });
                     if (templateExistsResponse.HttpStatusCode == 200)
                     {
                         TemplateRegistrationSuccess = true;
-
                         return;
                     }
                 }
 
-                StringResponse result;                
-                //if (_versionManager.EffectiveVersion.Major < 8)
-                //{ 
-                //    result = _client.Indices.PutTemplateForAll<StringResponse>(_templateName, GetTemplatePostData(),
-                //        new PutIndexTemplateRequestParameters
-                //        {
-                //            IncludeTypeName = IncludeTypeName ? true : (bool?)null
-                //        });
-                //}
-                //else
-                {
-                    // Default to version 8 API
-                    result = _client.Indices.PutTemplateV2ForAll<StringResponse>(_templateName, GetTemplatePostData());
-                }
-
+                // NOTE: OpenSearch from v1 onwards is compatible with Elasticsearch v8 templates
+                // This is even true for AWS OpenSearch when running in ESv7 compatibility mode
+                var result = _client.Indices.PutTemplateV2ForAll<StringResponse>(_templateName, GetTemplatePostData());
                 if (!result.Success)
                 {
                     ((IOpenSearchResponse)result).TryGetServerErrorReason(out var serverError);
@@ -199,7 +191,6 @@ namespace Serilog.Sinks.OpenSearch
                 }
                 else
                     TemplateRegistrationSuccess = true;
-
             }
             catch (Exception ex)
             {
@@ -244,12 +235,11 @@ namespace Serilog.Sinks.OpenSearch
             if (_options.NumberOfReplicas.HasValue && !settings.ContainsKey("number_of_replicas"))
                 settings.Add("number_of_replicas", _options.NumberOfReplicas.Value.ToString());
 
-            var effectiveTemplateVerson =
+            var effectiveTemplateVersion =
                 _options.AutoRegisterTemplateVersion ??
                 _versionManager.EffectiveVersion.Major switch
                 {
-                    >= 2 => AutoRegisterTemplateVersion.OSv2,
-                    1 => AutoRegisterTemplateVersion.OSv1,
+                    >= 1 => AutoRegisterTemplateVersion.OSv1,
                     _ => throw new NotSupportedException()
                 };
 
@@ -258,7 +248,7 @@ namespace Serilog.Sinks.OpenSearch
                 _versionManager.EffectiveVersion.Major,
                 settings,
                 _templateMatchString,
-                effectiveTemplateVerson);
+                effectiveTemplateVersion);
         }
     }
 }

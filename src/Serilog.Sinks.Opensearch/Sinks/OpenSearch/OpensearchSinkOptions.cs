@@ -325,8 +325,7 @@ namespace Serilog.Sinks.OpenSearch
         /// 
         /// <para>
         /// Currently supports:
-        /// - using <see cref="Serilog.Sinks.OpenSearch.AutoRegisterTemplateVersion.OSv1"/> against <c> OpenSearch 1.x </c>
-        /// - using <see cref="Serilog.Sinks.OpenSearch.AutoRegisterTemplateVersion.OSv2"/> against <c> OpenSearch 2.x </c>
+        /// - using <see cref="Serilog.Sinks.OpenSearch.AutoRegisterTemplateVersion.OSv1"/> against <c> OpenSearch 1.x, 2.x </c>
         /// </para>
         /// </summary>
         public bool DetectOpenSearchVersion { get; set; } = true;

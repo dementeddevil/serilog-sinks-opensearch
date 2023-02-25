@@ -30,7 +30,6 @@ namespace Serilog.Sinks.OpenSearch.Tests.Templating
 
             var selfLogContents = selfLogMessages.ToString();
             selfLogContents.Should().Contain("Failed to discover the cluster version");
-
         }
 
         private static ILogger CreateLoggerThatCrashes()
