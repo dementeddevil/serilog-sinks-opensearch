@@ -91,13 +91,13 @@ More elaborate configuration, using additional Nuget packages (e.g. `Serilog.Enr
 }
 ```
 
-This way the sink will detect version of OpenSearch server (`DetectOpenSearchVersion` is set to `true` by default) and handle `TypeName` behavior correctly, based on the server version (6.x, 7.x or 8.x).
+This way the sink will detect version of OpenSearch server (`DetectOpenSearchVersion` is set to `true` by default) and it will successfully handle AWS OpenSearch when it is running in Elasticsearch compatibility mode.
 
 ### Disable detection of OpenSearch server version
 
-Alternatively, `DetectOpenSearchVersion` can be set to `false` and certain option can be configured manually. In that case, the sink will assume version 7 of OpenSearch, but options will be ignored due to a potential version incompatibility.
+Alternatively, `DetectOpenSearchVersion` can be set to `false` and certain option can be configured manually. In that case, the sink will assume version 1 of OpenSearch, but options will be ignored due to a potential version incompatibility.
 
-For example, you can configure the sink to force registeration of v6 index template. Be aware that the AutoRegisterTemplate option will not overwrite an existing template.
+For example, you can configure the sink to force registration of v1 index template. Be aware that the AutoRegisterTemplate option will not overwrite an existing template.
 
 ```csharp
 var loggerConfig = new LoggerConfiguration()
@@ -127,7 +127,7 @@ This example shows the options that are currently available when using the appSe
     <add key="serilog:write-to:OpenSearch.period" value="2"/>
     <add key="serilog:write-to:OpenSearch.inlineFields" value="true"/>
     <add key="serilog:write-to:OpenSearch.restrictedToMinimumLevel" value="Warning"/>
-    <add key="serilog:write-to:OpenSearch.bufferBaseFilename" value="C:\Temp\SerilogElasticBuffer"/>
+    <add key="serilog:write-to:OpenSearch.bufferBaseFilename" value="C:\Temp\SerilogOpenSearchBuffer"/>
     <add key="serilog:write-to:OpenSearch.bufferFileSizeLimitBytes" value="5242880"/>
     <add key="serilog:write-to:OpenSearch.bufferLogShippingInterval" value="5000"/>
     <add key="serilog:write-to:OpenSearch.bufferRetainedInvalidPayloadsLimitBytes" value="5000"/>
