@@ -344,3 +344,8 @@ Option BufferFileSizeLimitBytes is added The maximum size, in bytes, to which th
 #### Version 1
 
 * Initial version
+
+### Version 1.1
+
+* Updated dependencies
+* Resolved runtime issue when processing invalid information from Opensearch

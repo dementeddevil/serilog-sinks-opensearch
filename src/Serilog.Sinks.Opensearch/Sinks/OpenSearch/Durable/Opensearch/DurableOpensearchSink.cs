@@ -54,14 +54,14 @@ namespace Serilog.Sinks.OpenSearch.Durable
             var opensearchLogClient = new OpenSearchLogClient(
                 openSearchLowLevelClient: _state.Client, 
                 cleanPayload: _state.Options.BufferCleanPayload,
-                elasticOpType: _state.Options.BatchAction);
+                openOpType: _state.Options.BatchAction);
 
             var payloadReader = new OpenSearchPayloadReader(
                  pipelineName: _state.Options.PipelineName,  
                  typeName:_state.Options.TypeName, 
                  serialize:_state.Serialize,  
                  getIndexForEvent: _state.GetBufferedIndexForEvent,
-                 elasticOpType: _state.Options.BatchAction,
+                 openOpType: _state.Options.BatchAction,
                  rollingInterval: options.BufferFileRollingInterval);
 
             _shipper = new OpenSearchLogShipper(
