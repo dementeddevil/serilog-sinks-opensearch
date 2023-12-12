@@ -84,7 +84,7 @@ namespace Serilog.Sinks.OpenSearch.Durable
             List<string> badPayload = new List<string>();
 
             // If the items are not directly assignable to an IEnumerable then assume it's wrapped in a nullable
-            if (!typeof(System.Collections.IEnumerable).IsAssignableFrom(items))
+            if (!typeof(System.Collections.IEnumerable).IsAssignableFrom(items.GetType()))
             {
                 items = items.Value;
             }
