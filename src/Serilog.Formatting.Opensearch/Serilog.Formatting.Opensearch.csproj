@@ -24,11 +24,11 @@
     <RepositoryType>git</RepositoryType>
     <RootNamespace>Serilog.Formatting.OpenSearch</RootNamespace>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>$(VersionPrefix)1.1.0-alpha1</Version>
+    <Version>$(VersionPrefix)1.2.0</Version>
   </PropertyGroup>
     
   <ItemGroup>
-    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog" Version="4.0.0" />
   </ItemGroup>
     
   <ItemGroup>
