@@ -24,7 +24,7 @@
     <RepositoryType>git</RepositoryType>
     <RootNamespace>Serilog.Formatting.OpenSearch</RootNamespace>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>$(VersionPrefix)1.3.0</Version>
+    <Version>$(VersionPrefix)1.4.0</Version>
   </PropertyGroup>
     
   <ItemGroup>
