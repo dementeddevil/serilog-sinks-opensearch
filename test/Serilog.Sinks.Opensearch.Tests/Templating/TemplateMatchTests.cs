@@ -37,7 +37,7 @@ namespace Serilog.Sinks.OpenSearch.Tests.Templating
         public void TemplatePutToCorrectUrl()
         {
             var uri = this._templatePut.Item1;
-            uri.AbsolutePath.Should().Be("/_index_template/dailyindex-logs-template");
+            uri.AbsolutePath.Should().Be("/_template/dailyindex-logs-template");
         }
 
         [Fact]

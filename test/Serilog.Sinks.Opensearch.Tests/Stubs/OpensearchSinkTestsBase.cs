@@ -111,7 +111,7 @@ namespace Serilog.Sinks.OpenSearch.Tests.Stubs
             var json = string.Join("", _seenHttpPosts);
             var bulkJsonPieces = json.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-            bulkJsonPieces.Count().Should().BeGreaterOrEqualTo(lastN);
+            bulkJsonPieces.Count().Should().BeGreaterThanOrEqualTo(lastN);
             var skip = Math.Max(0, bulkJsonPieces.Count() - lastN);
 
             return bulkJsonPieces.Skip(skip).Take(lastN).ToArray();
