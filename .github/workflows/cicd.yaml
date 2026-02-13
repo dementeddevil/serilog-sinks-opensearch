@@ -69,7 +69,7 @@ jobs:
           path: test/Serilog.Sinks.OpenSearch.Tests/TestResults/TestResults-${{ runner.os }}.html
 
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         if: always()
         with:
           name: Test Results (${{ runner.os }})
