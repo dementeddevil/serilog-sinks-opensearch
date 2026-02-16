@@ -29,14 +29,14 @@ jobs:
       release-body: ${{ steps.tag-message.outputs.release-notes }}
     steps:
       - name: Checkout git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Install .NET SDK
-        uses: actions/setup-dotnet@v3.0.3
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '7.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Retrieve cached NuGet packages
         uses: actions/cache@v3
@@ -55,21 +55,21 @@ jobs:
         id: dotnet-test
       
       - name: Upload received files from failing tests
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: Received-${{ runner.os }}
           path: "**/*.received.*"
 
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: TestResults-${{ runner.os }}
           path: test/Serilog.Sinks.OpenSearch.Tests/TestResults/TestResults-${{ runner.os }}.html
 
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         if: always()
         with:
           name: Test Results (${{ runner.os }})
@@ -81,7 +81,7 @@ jobs:
         id: dotnet-pack
     
       - name: Upload NuGet package artifact        
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v6
         with:
           name: nuget
           path: '**/*.nupkg'
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: nuget
           path: nuget
@@ -114,15 +114,15 @@ jobs:
     name: Publish NuGet package 
     steps:
       - name: Checkout git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Install .NET SDK
-        uses: actions/setup-dotnet@v3.0.3
+        uses: actions/setup-dotnet@v5
 
       - name: Retrieve cached NuGet packages
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
