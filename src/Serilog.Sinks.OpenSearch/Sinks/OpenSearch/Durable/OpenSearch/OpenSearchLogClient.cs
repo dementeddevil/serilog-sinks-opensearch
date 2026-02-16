@@ -14,21 +14,21 @@ namespace Serilog.Sinks.OpenSearch.Durable
     {
         private readonly IOpenSearchLowLevelClient _openSearchLowLevelClient;
         private readonly Func<string, long?, string, string> _cleanPayload;
-        private readonly OpenOpType _elasticOpType;
+        private readonly OpenOpType _openOpType;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="openSearchLowLevelClient"></param>
         /// <param name="cleanPayload"></param>
-        /// <param name="elasticOpType"></param>
+        /// <param name="openOpType"></param>
         public OpenSearchLogClient(IOpenSearchLowLevelClient openSearchLowLevelClient,
             Func<string, long?, string, string> cleanPayload,
-            OpenOpType elasticOpType)
+            OpenOpType openOpType)
         {
             _openSearchLowLevelClient = openSearchLowLevelClient;
             _cleanPayload = cleanPayload;
-            _elasticOpType = elasticOpType;
+            _openOpType = openOpType;
         }
 
         public async Task<SentPayloadResult> SendPayloadAsync(List<string> payload)
@@ -83,10 +83,16 @@ namespace Serilog.Sinks.OpenSearch.Durable
             if (items == null) return null;
             List<string> badPayload = new List<string>();
 
+            // If the items are not directly assignable to an IEnumerable then assume it's wrapped in a nullable
+            if (!typeof(System.Collections.IEnumerable).IsAssignableFrom(items.GetType()))
+            {
+                items = items.Value;
+            }
+
             bool hasErrors = false;
             foreach (dynamic item in items)
             {
-                var itemIndex = item?[BatchedOpenSearchSink.BulkAction(_elasticOpType)];
+                var itemIndex = item?[BatchedOpenSearchSink.BulkAction(_openOpType)];
                 long? status = itemIndex?["status"];
                 i++;
                 if (!status.HasValue || status < 300)

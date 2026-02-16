@@ -117,7 +117,8 @@ namespace Serilog.Sinks.OpenSearch
                 closingDelimiter: string.Empty,
                 serializer: options.Serializer != null ? new SerializerAdapter(options.Serializer) : null,
                 inlineFields: options.InlineFields,
-                formatStackTraceAsArray: options.FormatStackTraceAsArray
+                formatStackTraceAsArray: options.FormatStackTraceAsArray,
+                formatTimeSpanAsLong: options.FormatTimeSpanAsLong
             );
         }
 
@@ -128,7 +129,8 @@ namespace Serilog.Sinks.OpenSearch
                closingDelimiter: Environment.NewLine,
                serializer: options.Serializer != null ? new SerializerAdapter(options.Serializer) : null,
                inlineFields: options.InlineFields,
-               formatStackTraceAsArray: options.FormatStackTraceAsArray
+               formatStackTraceAsArray: options.FormatStackTraceAsArray,
+               formatTimeSpanAsLong: options.FormatTimeSpanAsLong
            );
         }
 
@@ -178,7 +180,7 @@ namespace Serilog.Sinks.OpenSearch
 
                 // NOTE: OpenSearch from v1 onwards is compatible with Elasticsearch v8 templates
                 // This is even true for AWS OpenSearch when running in ESv7 compatibility mode
-                var result = _client.Indices.PutTemplateV2ForAll<StringResponse>(_templateName, GetTemplatePostData());
+                var result = _client.Indices.PutTemplateForAll<StringResponse>(_templateName, GetTemplatePostData());
                 if (!result.Success)
                 {
                     ((IOpenSearchResponse)result).TryGetServerErrorReason(out var serverError);

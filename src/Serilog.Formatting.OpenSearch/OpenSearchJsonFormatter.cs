@@ -72,7 +72,8 @@ namespace Serilog.Formatting.OpenSearch
         /// <param name="inlineFields">When set to true values will be written at the root of the json document</param>
         /// <param name="renderMessageTemplate">If true, the message template will be rendered and written to the output as a
         /// property named RenderedMessageTemplate.</param>
-        /// <param name="formatStackTraceAsArray">If true, splits the StackTrace by new line and writes it as a an array of strings</param>
+        /// <param name="formatStackTraceAsArray">If true, splits the StackTrace by new line and writes it as a an array of strings.</param>
+        /// <param name="formatTimeSpanAsLong">If true, formats any TimeSpan values using the Ticks property as a long value.</param>
         public OpenSearchJsonFormatter(
             bool omitEnclosingObject = false,
             string closingDelimiter = null,
@@ -81,12 +82,18 @@ namespace Serilog.Formatting.OpenSearch
             ISerializer serializer = null,
             bool inlineFields = false,
             bool renderMessageTemplate = true,
-            bool formatStackTraceAsArray = false)
+            bool formatStackTraceAsArray = false,
+            bool formatTimeSpanAsLong = false)
             : base(omitEnclosingObject, closingDelimiter, renderMessage, formatProvider, renderMessageTemplate)
         {
             _serializer = serializer;
             _inlineFields = inlineFields;
             _formatStackTraceAsArray = formatStackTraceAsArray;
+
+            if (formatTimeSpanAsLong)
+            {
+                AddLiteralWriter(typeof(TimeSpan), (v, w) => WriteTimeSpan((TimeSpan)v, w));
+            }
         }
 
         /// <summary>
@@ -302,5 +309,9 @@ namespace Serilog.Formatting.OpenSearch
             base.WriteLiteralValue(value, output);
         }
 
+        static void WriteTimeSpan(TimeSpan value, TextWriter output)
+        {
+            output.Write(value.Ticks);
+        }
     }
 }

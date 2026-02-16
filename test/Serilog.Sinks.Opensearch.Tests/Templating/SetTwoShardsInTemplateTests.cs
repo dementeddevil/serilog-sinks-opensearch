@@ -42,7 +42,7 @@ namespace Serilog.Sinks.OpenSearch.Tests.Templating
         public void TemplatePutToCorrectUrl()
         {
             var uri = _templatePut.Item1;
-            uri.AbsolutePath.Should().Be("/_index_template/serilog-events-template");
+            uri.AbsolutePath.Should().Be("/_template/serilog-events-template");
         }
     }
 }

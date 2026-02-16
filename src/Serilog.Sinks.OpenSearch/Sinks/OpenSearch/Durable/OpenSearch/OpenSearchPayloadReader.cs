@@ -16,7 +16,7 @@ namespace Serilog.Sinks.OpenSearch.Durable
         private readonly string _typeName;
         private readonly Func<object, string> _serialize;
         private readonly Func<string, DateTime,string> _getIndexForEvent;
-        private readonly OpenOpType _elasticOpType;
+        private readonly OpenOpType _openOpType;
         private readonly RollingInterval _rollingInterval;
         private List<string> _payload;
         private int _count;
@@ -29,10 +29,10 @@ namespace Serilog.Sinks.OpenSearch.Durable
         /// <param name="typeName"></param>
         /// <param name="serialize"></param>
         /// <param name="getIndexForEvent"></param>
-        /// <param name="elasticOpType"></param>
+        /// <param name="openOpType"></param>
         /// <param name="rollingInterval"></param>
         public OpenSearchPayloadReader(string pipelineName, string typeName, Func<object, string> serialize,
-            Func<string, DateTime, string> getIndexForEvent, OpenOpType elasticOpType, RollingInterval rollingInterval)
+            Func<string, DateTime, string> getIndexForEvent, OpenOpType openOpType, RollingInterval rollingInterval)
         {
             if ((int)rollingInterval < (int)RollingInterval.Day)
             {
@@ -43,7 +43,7 @@ namespace Serilog.Sinks.OpenSearch.Durable
             _typeName = typeName;
             _serialize = serialize;
             _getIndexForEvent = getIndexForEvent;
-            _elasticOpType = elasticOpType;
+            _openOpType = openOpType;
             _rollingInterval = rollingInterval;
         }
 
@@ -93,7 +93,7 @@ namespace Serilog.Sinks.OpenSearch.Durable
         {
             var indexName = _getIndexForEvent(nextLine, _date);
             var action = BatchedOpenSearchSink.CreateOpenSearchAction(
-                opType: _elasticOpType, 
+                opType: _openOpType, 
                 indexName: indexName, pipelineName: _pipelineName,
                 id: _count + "_" + Guid.NewGuid(),
                 mappingType: _typeName);

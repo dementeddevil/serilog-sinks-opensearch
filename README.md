@@ -339,8 +339,23 @@ i.e.
 Option BufferFileCountLimit is added. The maximum number of log files that will be retained. including the current log file. For unlimited retention, pass null. The default is 31.
 Option BufferFileSizeLimitBytes is added The maximum size, in bytes, to which the buffer log file for a specific date will be allowed to grow. By default `100L * 1024 * 1024` will be applied.
 
+### Targeting AWS OpenSearch
+
+If you are targeting the hosted AWS OpenSearch and the cluster in question has fine-grained access control enabled then you will need to get all requests signed.
+
+Thankfully this is easy to do once you've added the following nuget package `OpenSearch.Net.Auth.AwsSigV4
+
 ### Breaking changes
 
 #### Version 1
 
 * Initial version
+
+#### Version 1.1
+
+* Updated dependencies
+* Resolved runtime issue when processing invalid information from Opensearch
+
+#### Version 1.2
+
+* Updated dependencies
