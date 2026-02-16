@@ -273,7 +273,12 @@ namespace Serilog.Sinks.OpenSearch
         /// When set to true splits the StackTrace by new line and writes it as a an array of strings.
         /// </summary>
         public bool FormatStackTraceAsArray { get; set; }
-        
+
+        /// <summary>
+        /// When set to true writes TimeSpan as long value instead of performing ToString conversion.
+        /// </summary>
+        public bool FormatTimeSpanAsLong { get; set; }
+
         /// <summary>
         /// The interval at which buffer log files will roll over to a new file. The default is <see cref="RollingInterval.Day"/>.
         /// Less frequent intervals like <see cref="RollingInterval.Infinite"/>, <see cref="RollingInterval.Year"/>,

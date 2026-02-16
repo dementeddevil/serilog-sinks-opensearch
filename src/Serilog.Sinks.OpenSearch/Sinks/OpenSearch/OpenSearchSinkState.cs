@@ -117,7 +117,8 @@ namespace Serilog.Sinks.OpenSearch
                 closingDelimiter: string.Empty,
                 serializer: options.Serializer != null ? new SerializerAdapter(options.Serializer) : null,
                 inlineFields: options.InlineFields,
-                formatStackTraceAsArray: options.FormatStackTraceAsArray
+                formatStackTraceAsArray: options.FormatStackTraceAsArray,
+                formatTimeSpanAsLong: options.FormatTimeSpanAsLong
             );
         }
 
@@ -128,7 +129,8 @@ namespace Serilog.Sinks.OpenSearch
                closingDelimiter: Environment.NewLine,
                serializer: options.Serializer != null ? new SerializerAdapter(options.Serializer) : null,
                inlineFields: options.InlineFields,
-               formatStackTraceAsArray: options.FormatStackTraceAsArray
+               formatStackTraceAsArray: options.FormatStackTraceAsArray,
+               formatTimeSpanAsLong: options.FormatTimeSpanAsLong
            );
         }
 
