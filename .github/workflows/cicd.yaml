@@ -39,7 +39,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Retrieve cached NuGet packages
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
