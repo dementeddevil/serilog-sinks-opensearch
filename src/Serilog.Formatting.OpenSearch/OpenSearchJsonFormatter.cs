@@ -56,9 +56,13 @@ namespace Serilog.Formatting.OpenSearch
         /// Timestamp property name
         /// </summary>
         public const string TimestampPropertyName = "@timestamp";
-        /// <summary>Trace identifier property name.</summary>
+        /// <summary>
+        /// Trace identifier property name.
+        /// </summary>
         public const string TraceIdPropertyName = "TraceId";
-        /// <summary>Span identifier property name.</summary>
+        /// <summary>
+        /// Span identifier property name.
+        /// </summary>
         public const string SpanIdPropertyName = "SpanId";
 
         /// <summary>
