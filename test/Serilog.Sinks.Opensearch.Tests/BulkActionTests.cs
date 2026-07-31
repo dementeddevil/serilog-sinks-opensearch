@@ -1,17 +1,17 @@
+using System.Threading.Tasks;
 using System;
 using System.Linq;
-using FluentAssertions;
 using Serilog.Events;
 using Serilog.Parsing;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests
 {
     public class BulkActionTests : OpenSearchSinkTestsBase
     {
-        [Fact(Skip = "Flaky test on GitHub actions")]
-        public void DefaultBulkActionV7()
+        [Test]
+        [Skip("Flaky test on GitHub actions")]
+        public async Task DefaultBulkActionV7()
         {
             _options.IndexFormat = "logs";
             _options.TypeName = "_doc";
@@ -22,13 +22,15 @@ namespace Serilog.Sinks.OpenSearch.Tests
                 sink.Emit(ADummyLogEvent());
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
+            var bulkJsonPieces = await this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
             const string expectedAction = @"{""index"":{""_type"":""_doc"",""_index"":""logs""}}";
-            bulkJsonPieces[0].Should().Be(expectedAction);
+            await Assert.That(bulkJsonPieces[0]).IsEqualTo(expectedAction);
         }
 
-        [Fact(Skip = "Flaky test on GitHub actions")]
-        public void BulkActionV7OverrideTypeName()
+        [Test]
+
+        [Skip("Flaky test on GitHub actions")]
+        public async Task BulkActionV7OverrideTypeName()
         {
             _options.IndexFormat = "logs";
             _options.TypeName = null; // This is the default value, starting v9.0.0
@@ -40,13 +42,15 @@ namespace Serilog.Sinks.OpenSearch.Tests
                 sink.Emit(ADummyLogEvent());
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
+            var bulkJsonPieces = await this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
             const string expectedAction = @"{""index"":{""_type"":""_doc"",""_index"":""logs""}}";
-            bulkJsonPieces[0].Should().Be(expectedAction);
+            await Assert.That(bulkJsonPieces[0]).IsEqualTo(expectedAction);
         }
 
-        [Fact(Skip = "Flaky test on GitHub actions")]
-        public void DefaultBulkActionV8()
+        [Test]
+
+        [Skip("Flaky test on GitHub actions")]
+        public async Task DefaultBulkActionV8()
         {
             _options.IndexFormat = "logs";
             _options.TypeName = null;
@@ -57,14 +61,17 @@ namespace Serilog.Sinks.OpenSearch.Tests
                 sink.Emit(ADummyLogEvent());
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
+            var bulkJsonPieces = await this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
             const string expectedAction = @"{""index"":{""_index"":""logs""}}";
-            bulkJsonPieces[0].Should().Be(expectedAction);
+            await Assert.That(bulkJsonPieces[0]).IsEqualTo(expectedAction);
         }
 
 
-        [Fact(Skip = "Flaky test on GitHub actions")]
-        public void BulkActionDataStreams()
+        [Test]
+
+
+        [Skip("Flaky test on GitHub actions")]
+        public async Task BulkActionDataStreams()
         {
             _options.IndexFormat = "logs-my-stream";
             _options.TypeName = null;
@@ -77,13 +84,15 @@ namespace Serilog.Sinks.OpenSearch.Tests
                 sink.Emit(ADummyLogEvent());
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
+            var bulkJsonPieces = await this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
             const string expectedAction = @"{""create"":{""_index"":""logs-my-stream""}}";
-            bulkJsonPieces[0].Should().Be(expectedAction);
+            await Assert.That(bulkJsonPieces[0]).IsEqualTo(expectedAction);
         }
 
-        [Fact(Skip = "Flaky test on GitHub actions")]
-        public void PipelineAction()
+        [Test]
+
+        [Skip("Flaky test on GitHub actions")]
+        public async Task PipelineAction()
         {
             _options.IndexFormat = "logs-my-stream";
             _options.TypeName = "_doc";
@@ -96,9 +105,9 @@ namespace Serilog.Sinks.OpenSearch.Tests
                 sink.Emit(ADummyLogEvent());
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
+            var bulkJsonPieces = await this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
             const string expectedAction = @"{""index"":{""_type"":""_doc"",""_index"":""logs-my-stream"",""pipeline"":""my-pipeline""}}";
-            bulkJsonPieces[0].Should().Be(expectedAction);
+            await Assert.That(bulkJsonPieces[0]).IsEqualTo(expectedAction);
         }
 
         private static LogEvent ADummyLogEvent() {

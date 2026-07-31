@@ -50,8 +50,11 @@ jobs:
       - name: Build solution
         run: dotnet build --no-restore -c Release
 
-      - name: Run tests
-        run: dotnet test --no-build -c Release --logger "html;LogFileName=TestResults-${{ runner.os }}.html" --logger "trx;LogFileName=TestResults-${{ runner.os }}.trx" --logger GitHubActions
+      - name: Run unit tests
+        run: |
+          dotnet test test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -f net8.0 --no-build -c Release --report-trx --results-directory artifacts/test-results/unit/net8.0 --coverage --coverage-output-format cobertura --coverage-output "$GITHUB_WORKSPACE/artifacts/coverage/unit/net8.0.cobertura.xml"
+          dotnet test test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -f net9.0 --no-build -c Release --report-trx --results-directory artifacts/test-results/unit/net9.0 --coverage --coverage-output-format cobertura --coverage-output "$GITHUB_WORKSPACE/artifacts/coverage/unit/net9.0.cobertura.xml"
+          dotnet test test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -f net10.0 --no-build -c Release --report-trx --results-directory artifacts/test-results/unit/net10.0 --coverage --coverage-output-format cobertura --coverage-output "$GITHUB_WORKSPACE/artifacts/coverage/unit/net10.0.cobertura.xml"
         id: dotnet-test
       
       - name: Upload received files from failing tests
@@ -61,19 +64,21 @@ jobs:
           name: Received-${{ runner.os }}
           path: "**/*.received.*"
 
-      - name: Upload test results
+      - name: Upload unit-test evidence
         uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: TestResults-${{ runner.os }}
-          path: test/Serilog.Sinks.OpenSearch.Tests/TestResults/TestResults-${{ runner.os }}.html
+          name: UnitTestEvidence-${{ runner.os }}
+          path: |
+            artifacts/test-results/unit/**/*.trx
+            artifacts/coverage/unit/*.cobertura.xml
 
       - name: Test Report
         uses: dorny/test-reporter@v2
         if: always()
         with:
           name: Test Results (${{ runner.os }})
-          path: '**.trx'
+          path: 'artifacts/test-results/unit/**/*.trx'
           reporter: dotnet-trx
 
       - name: Create NuGet packages

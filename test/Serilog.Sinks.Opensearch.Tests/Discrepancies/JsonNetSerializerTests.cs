@@ -1,7 +1,7 @@
-﻿using OpenSearch.Client;
+﻿using System.Threading.Tasks;
+using OpenSearch.Client;
 using OpenSearch.Client.JsonNetSerializer;
 using OpenSearch.Net;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
 {
@@ -9,10 +9,10 @@ namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
     {
         public JsonNetSerializerTests() : base(JsonNetSerializer.Default(LowLevelRequestResponseSerializer.Instance, new ConnectionSettings())) { }
 
-        [Fact]
-        public void Should_SerializeToExpandedExceptionObjectWhenExceptionIsSet()
+        [Test]
+        public async Task Should_SerializeToExpandedExceptionObjectWhenExceptionIsSet()
         {
-            this.ThrowAndLogAndCatchBulkOutput("test_with_jsonnet_serializer");
+            await this.ThrowAndLogAndCatchBulkOutput("test_with_jsonnet_serializer");
         }
     }
 

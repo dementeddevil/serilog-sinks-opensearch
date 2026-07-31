@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Xunit;
 using Serilog.Events;
 using Serilog.Parsing;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
@@ -11,7 +9,7 @@ namespace Serilog.Sinks.OpenSearch.Tests
 {
     public class RealExceptionNoSerializerTests : OpenSearchSinkTestsBase
     {
-        [Fact]
+        [Test]
         public async Task WhenPassingASerializer_ShouldExpandToJson()
         {
             try
@@ -40,14 +38,13 @@ namespace Serilog.Sinks.OpenSearch.Tests
                     sink.Emit(logEvent);
                 }
 
-                var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 4);
-                bulkJsonPieces[0].Should().Contain(@"""_index"":""logstash-2013.05.28");
-                bulkJsonPieces[1].Should().Contain("New Macabre");
-                bulkJsonPieces[1].Should().NotContain("Properties\"");
-                bulkJsonPieces[2].Should().Contain(@"""_index"":""logstash-2013.05.30");
-
-                bulkJsonPieces[3].Should().Contain("Complex\":{");
-                bulkJsonPieces[3].Should().Contain("exceptions\":[{\"Depth\":0");
+                var bulkJsonPieces = await this.AssertSeenHttpPosts(_seenHttpPosts, 4);
+                await Assert.That(bulkJsonPieces[0]).Contains(@"""_index"":""logstash-2013.05.28");
+                await Assert.That(bulkJsonPieces[1]).Contains("New Macabre");
+                await Assert.That(bulkJsonPieces[1]).DoesNotContain("Properties\"");
+                await Assert.That(bulkJsonPieces[2]).Contains(@"""_index"":""logstash-2013.05.30");
+                await Assert.That(bulkJsonPieces[3]).Contains("Complex\":{");
+                await Assert.That(bulkJsonPieces[3]).Contains("exceptions\":[{\"Depth\":0");
             }
         }
     }

@@ -1,7 +1,6 @@
-﻿using System;
-using FluentAssertions;
+﻿using System.Threading.Tasks;
+using System;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
@@ -25,16 +24,21 @@ namespace Serilog.Sinks.OpenSearch.Tests.Templating
                 logger.Error("Test exception. Should not contain an embedded exception object.");
             }
 
-            this._seenHttpGets.Should().NotBeNullOrEmpty().And.HaveCount(1);
             _templateGet = this._seenHttpGets[0];
         }
 
+        [Before(Test)]
+        public async Task AssertRegistration()
+        {
+            await Assert.That(this._seenHttpGets).IsNotNull().And.IsNotEmpty().And.Count().IsEqualTo(1);
+        }
+
        
-        [Fact]
-        public void TemplatePutToCorrectUrl()
+        [Test]
+        public async Task TemplatePutToCorrectUrl()
         {
             var uri = _templateGet.Item1;
-            uri.AbsolutePath.Should().Be("/");
+            await Assert.That(uri.AbsolutePath).IsEqualTo("/");
         }
     }
 }

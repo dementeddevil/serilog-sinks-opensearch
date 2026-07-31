@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <OutputType>Exe</OutputType>
     <AssemblyName>Serilog.Sinks.OpenSearch.Tests</AssemblyName>
     <PackageId>Serilog.Sinks.OpenSearch.Tests</PackageId>
 
@@ -52,55 +53,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageReference Include="TUnit" Version="1.63.0" />
     <PackageReference Include="OpenSearch.Client" Version="2.0.0" />
     <PackageReference Include="OpenSearch.Client.JsonNetSerializer" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
-    <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="OpenSearch.Net" Version="2.0.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
-    <PackageReference Include="FluentAssertions" Version="8.10.0" />
-    <PackageReference Include="coverlet.msbuild" Version="10.0.1" PrivateAssets="all" />
-    <PackageReference Include="ReportGenerator" Version="5.5.11" />
-
   </ItemGroup>
-
-
-  <ItemGroup Condition="$(ContinuousIntegrationBuild) == 'true'">
-    <PackageReference Include="GitHubActionsTestLogger" Version="2.0.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <PropertyGroup Label="Coverage">
-    <!-- Automatically collect coverage when running `dotnet test` -->
-    <CollectCoverage>true</CollectCoverage>
-    <!-- Tweak the default coverlet output directory to be `coverage` in the repository root directory -->
-    <CoverletOutput>$([MSBuild]::EnsureTrailingSlash($([System.IO.Path]::GetFullPath($([System.IO.Path]::Combine($(MSBuildProjectDirectory),'..','coverage'))))))</CoverletOutput>
-    <!-- The default output format is `json` which is not supported by ReportGenerator -->
-    <CoverletOutputFormat>cobertura</CoverletOutputFormat>
-  </PropertyGroup>
-
-  <Target Name="GenerateHtmlCoverageReport" AfterTargets="GenerateCoverageResultAfterTest" Condition="$(ContinuousIntegrationBuild) != 'true'">
-    <PropertyGroup>
-      <CoverageReportDirectory>$([MSBuild]::EnsureTrailingSlash('$(CoverletOutput)report'))</CoverageReportDirectory>
-      <OpenCommand Condition="$([MSBuild]::IsOSPlatform('Linux'))">xdg-open</OpenCommand>
-      <OpenCommand Condition="$([MSBuild]::IsOSPlatform('OSX'))">open</OpenCommand>
-      <OpenCommand Condition="$([MSBuild]::IsOSPlatform('Windows'))">explorer</OpenCommand>
-    </PropertyGroup>
-    <ReportGenerator ReportFiles="@(CoverletReport)" TargetDirectory="$(CoverageReportDirectory)" />
-    <!-- executing "explorer path\to\index.html" returns exit code 1, so we ignore it -->
-    <Exec WorkingDirectory="$(CoverageReportDirectory)" Command="$(OpenCommand) index.html" Condition="$(OpenCommand) != ''" IgnoreExitCode="true" />
-  </Target>
-
-  <Target Name="PrintCoverageReportPathForGitHubActions" AfterTargets="GenerateCoverageResultAfterTest" Condition="$(ContinuousIntegrationBuild) == 'true'">
-    <Message Importance="high" Text="&quot;coverage-reports=@(CoverletReport, ',')&quot; &gt;&gt; $GITHUB_OUTPUT" />
-  </Target>
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />

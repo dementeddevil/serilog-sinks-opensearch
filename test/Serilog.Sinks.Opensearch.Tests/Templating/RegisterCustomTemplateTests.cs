@@ -1,7 +1,6 @@
-﻿using System;
-using FluentAssertions;
+﻿using System.Threading.Tasks;
+using System;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
@@ -26,15 +25,20 @@ namespace Serilog.Sinks.OpenSearch.Tests.Templating
                 logger.Error("Test exception. Should not contain an embedded exception object.");
             }
 
-            this._seenHttpPosts.Should().NotBeNullOrEmpty().And.HaveCount(1);
-            this._seenHttpPuts.Should().NotBeNullOrEmpty().And.HaveCount(1);
             _templatePut = this._seenHttpPuts[0];
         }
 
-        [Fact]
-        public void ShouldRegisterCustomTemplate()
+        [Before(Test)]
+        public async Task AssertRegistration()
         {
-            this._templatePut.Item2.Should().BeEquivalentTo(CustomTemplateContent);
+            await Assert.That(this._seenHttpPosts).IsNotNull().And.IsNotEmpty().And.Count().IsEqualTo(1);
+            await Assert.That(this._seenHttpPuts).IsNotNull().And.IsNotEmpty().And.Count().IsEqualTo(1);
+        }
+
+        [Test]
+        public async Task ShouldRegisterCustomTemplate()
+        {
+            await Assert.That(this._templatePut.Item2).IsEqualTo(CustomTemplateContent).IgnoringCase();
         }
     }
 }

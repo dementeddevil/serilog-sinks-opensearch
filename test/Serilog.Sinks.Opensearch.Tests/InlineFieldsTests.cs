@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Serilog.Events;
 using Serilog.Parsing;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests
 {
     public class InlineFieldsTests : OpenSearchSinkTestsBase
     {
-        [Fact]
+        [Test]
         public async Task UsesCustomPropertyNames()
         {
             try
@@ -38,15 +36,15 @@ namespace Serilog.Sinks.OpenSearch.Tests
                     logEvent = new LogEvent(timestamp.AddDays(2), LogEventLevel.Information, e, template, properties);
                     sink.Emit(logEvent);
                 }
-                var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 4);
-                bulkJsonPieces[0].Should().Contain(@"""_index"":""logstash-2013.05.28");
-                bulkJsonPieces[1].Should().Contain("New Macabre");
-                bulkJsonPieces[1].Should().NotContain("Properties\"");
-                bulkJsonPieces[1].Should().NotContain("fields\":{");
-                bulkJsonPieces[1].Should().Contain("@timestamp");
-                bulkJsonPieces[1].Should().Contain("Song\":");
-                bulkJsonPieces[1].Should().EndWith("New Macabre\"}");
-                bulkJsonPieces[2].Should().Contain(@"""_index"":""logstash-2013.05.30");
+                var bulkJsonPieces = await this.AssertSeenHttpPosts(_seenHttpPosts, 4);
+                await Assert.That(bulkJsonPieces[0]).Contains(@"""_index"":""logstash-2013.05.28");
+                await Assert.That(bulkJsonPieces[1]).Contains("New Macabre");
+                await Assert.That(bulkJsonPieces[1]).DoesNotContain("Properties\"");
+                await Assert.That(bulkJsonPieces[1]).DoesNotContain("fields\":{");
+                await Assert.That(bulkJsonPieces[1]).Contains("@timestamp");
+                await Assert.That(bulkJsonPieces[1]).Contains("Song\":");
+                await Assert.That(bulkJsonPieces[1]).EndsWith("New Macabre\"}");
+                await Assert.That(bulkJsonPieces[2]).Contains(@"""_index"":""logstash-2013.05.30");
             }
         }
     }

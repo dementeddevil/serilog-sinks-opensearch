@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using OpenSearch.Client;
 using OpenSearch.Client.JsonNetSerializer;
@@ -51,17 +50,22 @@ namespace Serilog.Sinks.OpenSearch.Tests.Stubs
             };
         }
 
+        [After(Test)]
+        public void CleanupConnection()
+        {
+            _connection.Dispose();
+        }
+
         /// <summary>
         /// Returns the posted serilog messages and validates the entire bulk in the process
         /// </summary>
         /// <param name="expectedCount"></param>
         /// <returns></returns>
-        protected IList<SerilogOpenSearchEvent> GetPostedLogEvents(int expectedCount)
+        protected async Task<IList<SerilogOpenSearchEvent>> GetPostedLogEvents(int expectedCount)
         {
-            _seenHttpPosts.Should().NotBeNullOrEmpty();
+            await Assert.That(_seenHttpPosts).IsNotNull().And.IsNotEmpty();
             var totalBulks = _seenHttpPosts.SelectMany(p => p.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries)).ToList();
-            totalBulks.Should().NotBeNullOrEmpty().And.HaveCount(expectedCount * 2);
-
+            await Assert.That(totalBulks).IsNotNull().And.IsNotEmpty().And.Count().IsEqualTo(expectedCount * 2);
             var bulkActions = new List<SerilogOpenSearchEvent>();
             for (var i = 0; i < totalBulks.Count; i += 2)
             {
@@ -74,10 +78,9 @@ namespace Serilog.Sinks.OpenSearch.Tests.Stubs
                 {
                     throw new Exception($"Can not deserialize into BulkOperation \r\n:{totalBulks[i]}", e);
                 }
-                action.IndexAction.Should().NotBeNull();
-                action.IndexAction.Index.Should().NotBeNullOrEmpty().And.StartWith("logstash-");
-                action.IndexAction.Type.Should().BeNull();
-
+                await Assert.That(action.IndexAction).IsNotNull();
+                await Assert.That(action.IndexAction.Index).IsNotNull().And.IsNotEmpty().And.StartsWith("logstash-");
+                await Assert.That(action.IndexAction.Type).IsNull();
                 SerilogOpenSearchEvent actionMetaData;
                 try
                 {
@@ -88,7 +91,7 @@ namespace Serilog.Sinks.OpenSearch.Tests.Stubs
                     throw new Exception(
                         $"Can not deserialize into SerilogOpenSearchMessage \r\n:{totalBulks[i + 1]}", e);
                 }
-                actionMetaData.Should().NotBeNull();
+                await Assert.That(actionMetaData).IsNotNull();
                 bulkActions.Add(actionMetaData);
             }
             return bulkActions;
@@ -105,19 +108,19 @@ namespace Serilog.Sinks.OpenSearch.Tests.Stubs
             throw new Exception("boom!");
         }
 
-        protected string[] AssertSeenHttpPosts(List<string> _seenHttpPosts, int lastN, int expectedNumberOfRequests = 2)
+        protected async Task<string[]> AssertSeenHttpPosts(List<string> _seenHttpPosts, int lastN, int expectedNumberOfRequests = 2)
         {
-            _seenHttpPosts.Should().NotBeEmpty().And.HaveCount(expectedNumberOfRequests);
+            await Assert.That(_seenHttpPosts).IsNotEmpty().And.Count().IsEqualTo(expectedNumberOfRequests);
             var json = string.Join("", _seenHttpPosts);
             var bulkJsonPieces = json.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-            bulkJsonPieces.Count().Should().BeGreaterThanOrEqualTo(lastN);
+            await Assert.That(bulkJsonPieces.Count()).IsGreaterThanOrEqualTo(lastN);
             var skip = Math.Max(0, bulkJsonPieces.Count() - lastN);
 
             return bulkJsonPieces.Skip(skip).Take(lastN).ToArray();
         }
 
-        protected void JsonEquals(string json, string embeddedResourceNameEndsWith)
+        protected async Task JsonEquals(string json, string embeddedResourceNameEndsWith)
         {
 #if NETFRAMEWORK
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();       
@@ -130,7 +133,7 @@ namespace Serilog.Sinks.OpenSearch.Tests.Stubs
             var nOtherJson = JObject.Parse(expected);
             var equals = JToken.DeepEquals(nJson, nOtherJson);
             if (equals) return;
-            expected.Should().BeEquivalentTo(json);
+            await Assert.That(expected).IsEqualTo(json).IgnoringCase();
         }
     }
 }

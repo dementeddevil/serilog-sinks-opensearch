@@ -1,5 +1,5 @@
-﻿using OpenSearch.Net;
-using Xunit;
+﻿using System.Threading.Tasks;
+using OpenSearch.Net;
 
 namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
 {
@@ -7,10 +7,10 @@ namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
     {
         public OpenSearchDefaultSerializerTests() : base(new LowLevelRequestResponseSerializer()) { }
 
-        [Fact]
-        public void Should_SerializeToExpandedExceptionObjectWhenExceptionIsSet()
+        [Test]
+        public async Task Should_SerializeToExpandedExceptionObjectWhenExceptionIsSet()
         {
-            this.ThrowAndLogAndCatchBulkOutput("test_with_default_serializer");
+            await this.ThrowAndLogAndCatchBulkOutput("test_with_default_serializer");
         }
     }
 

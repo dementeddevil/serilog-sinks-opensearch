@@ -1,15 +1,14 @@
-﻿using System;
-using FluentAssertions;
+﻿using System.Threading.Tasks;
+using System;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
     public class SetOpenSearchSinkOptions : OpenSearchSinkTestsBase
     {
 
-        [Fact]
-        public void WhenCreatingOptions_NumberOfShardsInjected_NumberOfShardsAreSet()
+        [Test]
+        public async Task WhenCreatingOptions_NumberOfShardsInjected_NumberOfShardsAreSet()
         {
             var options = new OpenSearchSinkOptions(new Uri("http://localhost:9100"))
             {
@@ -19,9 +18,8 @@ namespace Serilog.Sinks.OpenSearch.Tests.Templating
                 NumberOfReplicas = 0
             };
                        
-            options.NumberOfReplicas.Should().Be(0);
-            options.NumberOfShards.Should().Be(2);
-
+            await Assert.That(options.NumberOfReplicas).IsEqualTo(0);
+            await Assert.That(options.NumberOfShards).IsEqualTo(2);
         }
     }
 }

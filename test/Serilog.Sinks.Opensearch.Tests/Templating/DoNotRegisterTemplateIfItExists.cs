@@ -1,7 +1,6 @@
-﻿using System;
-using FluentAssertions;
+﻿using System.Threading.Tasks;
+using System;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
@@ -25,13 +24,13 @@ namespace Serilog.Sinks.OpenSearch.Tests.Templating
             }
         }
 
-        [Fact]
-        public void WhenTemplateExists_ShouldNotSendAPutTemplate()
+        [Test]
+        public async Task WhenTemplateExists_ShouldNotSendAPutTemplate()
         {
             DoRegister();
-            this._seenHttpPosts.Should().NotBeNullOrEmpty().And.HaveCount(1);
-            this._seenHttpHeads.Should().NotBeNullOrEmpty().And.HaveCount(1);
-            this._seenHttpPuts.Should().BeNullOrEmpty();
+            await Assert.That(this._seenHttpPosts).IsNotNull().And.IsNotEmpty().And.Count().IsEqualTo(1);
+            await Assert.That(this._seenHttpHeads).IsNotNull().And.IsNotEmpty().And.Count().IsEqualTo(1);
+            await Assert.That(this._seenHttpPuts == null || this._seenHttpPuts.Count == 0).IsTrue();
         }
     }
 }

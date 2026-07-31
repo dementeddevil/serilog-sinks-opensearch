@@ -1,4 +1,4 @@
-﻿using Xunit;
+﻿using System.Threading.Tasks;
 
 namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
 {
@@ -6,10 +6,10 @@ namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
     {
         public NoSerializerTests() : base(null) {}
 
-        [Fact]
-        public void Should_SerializeToExpandedExceptionObjectWhenExceptionIsSet()
+        [Test]
+        public async Task Should_SerializeToExpandedExceptionObjectWhenExceptionIsSet()
         {
-            this.ThrowAndLogAndCatchBulkOutput("test_with_no_serializer");
+            await this.ThrowAndLogAndCatchBulkOutput("test_with_no_serializer");
         }
     }
 

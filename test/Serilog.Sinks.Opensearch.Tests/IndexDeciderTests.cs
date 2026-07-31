@@ -1,7 +1,6 @@
-﻿using System;
+﻿using System.Threading.Tasks;
+using System;
 using System.Collections.Generic;
-using FluentAssertions;
-using Xunit;
 using Serilog.Events;
 using Serilog.Parsing;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
@@ -10,8 +9,8 @@ namespace Serilog.Sinks.OpenSearch.Tests
 {
     public class IndexDeciderTests : OpenSearchSinkTestsBase
     {
-        [Fact]
-        public void IndexDecider_EndsUpInTheOutput()
+        [Test]
+        public async Task IndexDecider_EndsUpInTheOutput()
         {
             //DO NOTE that you cant send objects as scalar values through Logger.*("{Scalar}", {});
             var timestamp = new DateTimeOffset(2013, 05, 28, 22, 10, 20, 666, TimeSpan.FromHours(10));
@@ -37,15 +36,13 @@ namespace Serilog.Sinks.OpenSearch.Tests
                 sink.Emit(e);
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 4);
-            bulkJsonPieces[0].Should().Contain(@"""_index"":""logstash-information-2013.05.28");
-            bulkJsonPieces[1].Should().Contain("New Macabre");
-            bulkJsonPieces[2].Should().Contain(@"""_index"":""logstash-fatal-2011.05.28");
-            bulkJsonPieces[3].Should().Contain("Old Macabre");
-
+            var bulkJsonPieces = await this.AssertSeenHttpPosts(_seenHttpPosts, 4);
+            await Assert.That(bulkJsonPieces[0]).Contains(@"""_index"":""logstash-information-2013.05.28");
+            await Assert.That(bulkJsonPieces[1]).Contains("New Macabre");
+            await Assert.That(bulkJsonPieces[2]).Contains(@"""_index"":""logstash-fatal-2011.05.28");
+            await Assert.That(bulkJsonPieces[3]).Contains("Old Macabre");
             //serilog by default simpy .ToString()'s unknown objects
-            bulkJsonPieces[3].Should().Contain("Complex\":{");
-
+            await Assert.That(bulkJsonPieces[3]).Contains("Complex\":{");
         }
     }
 }

@@ -1,10 +1,9 @@
-﻿using System;
+﻿using System.Threading.Tasks;
+using System;
 using System.Collections.Generic;
-using FluentAssertions;
 using Serilog.Events;
 using Serilog.Parsing;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests
 {
@@ -14,8 +13,8 @@ namespace Serilog.Sinks.OpenSearch.Tests
         {
         }
 
-        [Fact]
-        public void CustomIndex_And_TypeName_EndsUpInTheOutput()
+        [Test]
+        public async Task CustomIndex_And_TypeName_EndsUpInTheOutput()
         {
             //DO NOTE that you cant send objects as scalar values through Logger.*("{Scalar}", {});
             var timestamp = new DateTimeOffset(2013, 05, 28, 22, 10, 20, 666, TimeSpan.FromHours(10));
@@ -41,22 +40,20 @@ namespace Serilog.Sinks.OpenSearch.Tests
                 sink.Emit(e);
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 4);
+            var bulkJsonPieces = await this.AssertSeenHttpPosts(_seenHttpPosts, 4);
 
-            bulkJsonPieces.Should().HaveCount(4);
-            bulkJsonPieces[0].Should().Contain(@"""_index"":""event-index-2013.05.28");
-            bulkJsonPieces[0].Should().NotContain(@"""_type"":""custom-event-type");
-            bulkJsonPieces[1].Should().Contain("New Macabre");
-            bulkJsonPieces[2].Should().Contain(@"""_index"":""event-index-2011.05.28");
-            bulkJsonPieces[2].Should().NotContain(@"""_type"":""custom-event-type");
-            bulkJsonPieces[3].Should().Contain("Old Macabre");
-
-            bulkJsonPieces[3].Should().Contain("Complex\":{");
-
+            await Assert.That(bulkJsonPieces).Count().IsEqualTo(4);
+            await Assert.That(bulkJsonPieces[0]).Contains(@"""_index"":""event-index-2013.05.28");
+            await Assert.That(bulkJsonPieces[0]).DoesNotContain(@"""_type"":""custom-event-type");
+            await Assert.That(bulkJsonPieces[1]).Contains("New Macabre");
+            await Assert.That(bulkJsonPieces[2]).Contains(@"""_index"":""event-index-2011.05.28");
+            await Assert.That(bulkJsonPieces[2]).DoesNotContain(@"""_type"":""custom-event-type");
+            await Assert.That(bulkJsonPieces[3]).Contains("Old Macabre");
+            await Assert.That(bulkJsonPieces[3]).Contains("Complex\":{");
         }
 
-        [Fact]
-        public void UpperCasedIndex_And_TypeName_EndsUpInTheOutput()
+        [Test]
+        public async Task UpperCasedIndex_And_TypeName_EndsUpInTheOutput()
         {
             //DO NOTE that you cant send objects as scalar values through Logger.*("{Scalar}", {});
             var timestamp = new DateTimeOffset(2013, 05, 28, 22, 10, 20, 666, TimeSpan.FromHours(10));
@@ -82,17 +79,16 @@ namespace Serilog.Sinks.OpenSearch.Tests
                 sink.Emit(e);
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 4);
+            var bulkJsonPieces = await this.AssertSeenHttpPosts(_seenHttpPosts, 4);
 
-            bulkJsonPieces.Should().HaveCount(4);
-            bulkJsonPieces[0].Should().Contain(@"""_index"":""event-index-2013.05.28");
-            bulkJsonPieces[0].Should().NotContain(@"""_type"":""custom-event-type");
-            bulkJsonPieces[1].Should().Contain("New Macabre");
-            bulkJsonPieces[2].Should().Contain(@"""_index"":""event-index-2011.05.28");
-            bulkJsonPieces[2].Should().NotContain(@"""_type"":""custom-event-type");
-            bulkJsonPieces[3].Should().Contain("Old Macabre");
-            bulkJsonPieces[3].Should().Contain("Complex\":{");
-
+            await Assert.That(bulkJsonPieces).Count().IsEqualTo(4);
+            await Assert.That(bulkJsonPieces[0]).Contains(@"""_index"":""event-index-2013.05.28");
+            await Assert.That(bulkJsonPieces[0]).DoesNotContain(@"""_type"":""custom-event-type");
+            await Assert.That(bulkJsonPieces[1]).Contains("New Macabre");
+            await Assert.That(bulkJsonPieces[2]).Contains(@"""_index"":""event-index-2011.05.28");
+            await Assert.That(bulkJsonPieces[2]).DoesNotContain(@"""_type"":""custom-event-type");
+            await Assert.That(bulkJsonPieces[3]).Contains("Old Macabre");
+            await Assert.That(bulkJsonPieces[3]).Contains("Complex\":{");
         }
     }
 }

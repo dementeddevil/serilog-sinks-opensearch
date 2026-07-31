@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Text;
-using FluentAssertions;
 using Serilog.Sinks.OpenSearch.Durable;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests;
 
-public class FileSetTests : IDisposable
+public class FileSetTests
 {
+    private const string BufferFilesKey = nameof(BufferFilesKey);
     private readonly string _fileNameBase;
     private readonly string _tempFileFullPathTemplate;
-    private Dictionary<RollingInterval, string> _bufferFileNames;
 
     public FileSetTests()
     {
@@ -20,35 +20,42 @@ public class FileSetTests : IDisposable
         _tempFileFullPathTemplate = _fileNameBase + "-{0}.json";
     }
 
-    public void Dispose()
+    [After(Test)]
+    public void Cleanup()
     {
-        foreach (var bufferFileName in _bufferFileNames.Values)
+        if (TestContext.Current?.StateBag.TryRemove(BufferFilesKey, out var value) != true || value is not string[] bufferFileNames)
+        {
+            return;
+        }
+
+        foreach (var bufferFileName in bufferFileNames)
         {
             System.IO.File.Delete(bufferFileName);
         }
     }
 
-    [Theory]
-    [InlineData(RollingInterval.Day)]
-    [InlineData(RollingInterval.Hour)]
-    [InlineData(RollingInterval.Infinite)]
-    [InlineData(RollingInterval.Minute)]
-    [InlineData(RollingInterval.Month)]
-    [InlineData(RollingInterval.Year)]
+    [Test]
+    [Arguments(RollingInterval.Day)]
+    [Arguments(RollingInterval.Hour)]
+    [Arguments(RollingInterval.Infinite)]
+    [Arguments(RollingInterval.Minute)]
+    [Arguments(RollingInterval.Month)]
+    [Arguments(RollingInterval.Year)]
     // Ensures that from all presented files FileSet gets only files with specified rolling interval and not the others.  
-    public void GetBufferFiles_ReturnsOnlySpecifiedTypeOfRollingFile(RollingInterval rollingInterval)
+    public async Task GetBufferFiles_ReturnsOnlySpecifiedTypeOfRollingFile(RollingInterval rollingInterval)
     {
         // Arrange
         var format = rollingInterval.GetFormat();
-        _bufferFileNames = GenerateFilesUsingFormat(format);
+        var bufferFileNames = GenerateFilesUsingFormat(format);
+        TestContext.Current!.StateBag[BufferFilesKey] = bufferFileNames.Values.ToArray();
         var fileSet = new FileSet(_fileNameBase, rollingInterval);
-        var bufferFileForInterval = _bufferFileNames[rollingInterval];
+        var bufferFileForInterval = bufferFileNames[rollingInterval];
 
         // Act
         var bufferFiles = fileSet.GetBufferFiles();
 
         // Assert
-        bufferFiles.Should().BeEquivalentTo(bufferFileForInterval);
+        await Assert.That(bufferFiles).IsEquivalentTo(new[] { bufferFileForInterval });
     }
 
     /// <summary>

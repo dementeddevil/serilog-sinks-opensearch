@@ -1,7 +1,6 @@
 ﻿using OpenSearch.Net;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using System.Text;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests
 {

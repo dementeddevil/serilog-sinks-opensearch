@@ -1,25 +1,24 @@
-﻿using System;
+﻿using System.Threading.Tasks;
+using System;
 using System.IO;
 using System.Text;
-using FluentAssertions;
-using Xunit;
 using Serilog.Debugging;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
 
 namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
-    [Collection("isolation")]
+    [NotInParallel("isolation")]
     public class SendsTemplateHandlesUnavailableServerTests : OpenSearchSinkTestsBase
     {
-        [Fact]
-        public void Should_not_crash_when_server_is_unavailable()
+        [Test]
+        public async Task Should_not_crash_when_server_is_unavailable()
         {
             // If this crashes, the test will fail
             CreateLoggerThatCrashes();
         }
 
-        [Fact]
-        public void Should_write_error_to_self_log()
+        [Test]
+        public async Task Should_write_error_to_self_log()
         {
             var selfLogMessages = new StringBuilder();
             SelfLog.Enable(new StringWriter(selfLogMessages));
@@ -28,8 +27,7 @@ namespace Serilog.Sinks.OpenSearch.Tests.Templating
             CreateLoggerThatCrashes();
 
             var selfLogContents = selfLogMessages.ToString();
-            selfLogContents.Should().Contain("Failed to create the template");
-
+            await Assert.That(selfLogContents).Contains("Failed to create the template");
         }
 
         private static ILogger CreateLoggerThatCrashes()

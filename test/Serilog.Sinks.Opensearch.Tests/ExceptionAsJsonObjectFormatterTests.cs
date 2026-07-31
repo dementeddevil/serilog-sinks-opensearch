@@ -1,10 +1,9 @@
-﻿using System;
+﻿using System.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Xunit;
 using Serilog.Events;
 using Serilog.Formatting.OpenSearch;
 using Serilog.Parsing;
@@ -23,8 +22,8 @@ namespace Serilog.Sinks.OpenSearch.Tests
             _options.CustomFormatter = new ExceptionAsObjectJsonFormatter(renderMessage:true);
         }
 
-        [Fact]
-        public void WhenLoggingAnEvent_OutputsValidJson()
+        [Test]
+        public async Task WhenLoggingAnEvent_OutputsValidJson()
         {
             const string expectedMessage = "test";
 
@@ -33,13 +32,13 @@ namespace Serilog.Sinks.OpenSearch.Tests
                 sink.Emit(LogEventWithMessage(expectedMessage));
             }
 
-            var eventWritten = AssertAndGetJsonEvents().First();
-            eventWritten.Level.Should().Be(LogEventLevel.Warning);
-            eventWritten.Message.Should().Be(expectedMessage);
+            var eventWritten = (await AssertAndGetJsonEvents()).First();
+            await Assert.That(eventWritten.Level).IsEqualTo(LogEventLevel.Warning);
+            await Assert.That(eventWritten.Message).IsEqualTo(expectedMessage);
         }
 
-        [Fact]
-        public void WhenLogging_WithException_ExceptionShouldBeRenderedInExceptionField()
+        [Test]
+        public async Task WhenLogging_WithException_ExceptionShouldBeRenderedInExceptionField()
         {
             const string expectedExceptionMessage = "test exception";
 
@@ -48,17 +47,17 @@ namespace Serilog.Sinks.OpenSearch.Tests
                 sink.Emit(LogEventWithMessage("test", new Exception(expectedExceptionMessage)));
             }
 
-            var eventWritten = AssertAndGetJsonEvents().First();
+            var eventWritten = (await AssertAndGetJsonEvents()).First();
             var exceptionInfo = eventWritten.Exception;
-            exceptionInfo.Should().NotBeNull();
-            exceptionInfo.Message.Should().Be(expectedExceptionMessage);
+            await Assert.That(exceptionInfo).IsNotNull();
+            await Assert.That(exceptionInfo.Message).IsEqualTo(expectedExceptionMessage);
 #if NETFRAMEWORK
-            exceptionInfo.ClassName.Should().Be("System.Exception");
+            await Assert.That(exceptionInfo.ClassName).IsEqualTo("System.Exception");
 #endif
         }
 
-        [Fact]
-        public void WhenLogging_ExceptionWithInner_ExceptionShouldIncludeInnerExceptions()
+        [Test]
+        public async Task WhenLogging_ExceptionWithInner_ExceptionShouldIncludeInnerExceptions()
         {
             var inner = new InvalidOperationException();
             var exception = new Exception("outer", inner);
@@ -68,10 +67,9 @@ namespace Serilog.Sinks.OpenSearch.Tests
                 sink.Emit(LogEventWithMessage("test", exception));
             }
 
-            var eventWritten = AssertAndGetJsonEvents().First();
+            var eventWritten = (await AssertAndGetJsonEvents()).First();
             var exceptionInfo = eventWritten.Exception;
-            exceptionInfo.InnerException.Should().NotBeNull();
-
+            await Assert.That(exceptionInfo.InnerException).IsNotNull();
         }
 
         private static LogEvent LogEventWithMessage(string expectedMessage, Exception exception = null)
@@ -80,9 +78,9 @@ namespace Serilog.Sinks.OpenSearch.Tests
             return new LogEvent(DateTimeOffset.Now, LogEventLevel.Warning, exception, template, Enumerable.Empty<LogEventProperty>());
         }
 
-        private IEnumerable<KibanaFriendlyJsonEvent> AssertAndGetJsonEvents()
+        private async Task<IEnumerable<KibanaFriendlyJsonEvent>> AssertAndGetJsonEvents()
         {
-            _seenHttpPosts.Should().NotBeEmpty();
+            await Assert.That(_seenHttpPosts).IsNotEmpty();
             return _seenHttpPosts.SelectMany(postedData => postedData.Split(new char[] { '\n'}, StringSplitOptions.RemoveEmptyEntries))
                 .Where((_,i) => i % 2 == 1)
                 .Select(JsonConvert.DeserializeObject<KibanaFriendlyJsonEvent>);

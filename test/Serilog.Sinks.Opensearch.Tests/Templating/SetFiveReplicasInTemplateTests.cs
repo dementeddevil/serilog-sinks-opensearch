@@ -1,7 +1,6 @@
-﻿using System;
-using FluentAssertions;
+﻿using System.Threading.Tasks;
+using System;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
@@ -26,22 +25,27 @@ namespace Serilog.Sinks.OpenSearch.Tests.Templating
                 logger.Error("Test exception. Should not contain an embedded exception object.");
             }
 
-            this._seenHttpPosts.Should().NotBeNullOrEmpty().And.HaveCount(1);
-            this._seenHttpPuts.Should().NotBeNullOrEmpty().And.HaveCount(1);
             _templatePut = this._seenHttpPuts[0];
         }
 
-        [Fact]
-        public void ShouldRegisterTheCorrectTemplateOnRegistration()
+        [Before(Test)]
+        public async Task AssertRegistration()
         {
-            JsonEquals(_templatePut.Item2, "template_v1_no-aliases_5replicas.json");
+            await Assert.That(this._seenHttpPosts).IsNotNull().And.IsNotEmpty().And.Count().IsEqualTo(1);
+            await Assert.That(this._seenHttpPuts).IsNotNull().And.IsNotEmpty().And.Count().IsEqualTo(1);
         }
 
-        [Fact]
-        public void TemplatePutToCorrectUrl()
+        [Test]
+        public async Task ShouldRegisterTheCorrectTemplateOnRegistration()
+        {
+            await JsonEquals(_templatePut.Item2, "template_v1_no-aliases_5replicas.json");
+        }
+
+        [Test]
+        public async Task TemplatePutToCorrectUrl()
         {
             var uri = _templatePut.Item1;
-            uri.AbsolutePath.Should().Be("/_template/serilog-events-template");
+            await Assert.That(uri.AbsolutePath).IsEqualTo("/_template/serilog-events-template");
         }
     }
 }

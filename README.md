@@ -9,6 +9,7 @@ This repository contains two nuget packages: `Serilog.Sinks.OpenSearch` and `Ser
 * [Quick start](#quick-start)
   * [OpenSearch sinks](#opensearch-sinks)
   * [OpenSearch formatters](#opensearch-formatters)
+* [Development and unit tests](#development-and-unit-tests)
 * [More information](#more-information)
   * [A note about fields inside OpenSearch](#a-note-about-fields-inside-opensearch)
   * [A note about Kibana](#a-note-about-kibana)
@@ -27,7 +28,7 @@ The Serilog OpenSearch sink project is a sink (basically a writer) for the Seril
 * Be able to customize the store; specify the index name being used, the serializer or the connections to the server (load balanced).
 * Durable mode; store the logevents first on disk before delivering them to OS making sure you never miss events if you have trouble connecting to your OS cluster.
 * Automatically create the right mappings for the best usage of the log events in OS or automatically upload your own custom mapping.
-* Versions 1 and 2 of OpenSearch supported. Version 1.0.0 of the sink targets netstandard2.0 and therefore can be run on any .NET Framework that supports it (both .NET Core and .NET Framework), however, we are focused on testing it with .NET 6.0/.NET 7.0 to make the maintenance simpler.
+* Versions 1 and 2 of OpenSearch supported. Version 1.0.0 of the sink targets netstandard2.0 and therefore can be run on any .NET Framework that supports it (both .NET Core and .NET Framework). The unit suite runs on .NET 8, .NET 9, and .NET 10.
 
 
 ## Quick start
@@ -175,6 +176,38 @@ Override default formatter if it's possible with selected sink
 var loggerConfig = new LoggerConfiguration()
   .WriteTo.Console(new OpenSearchJsonFormatter());
 ```
+
+## Development and unit tests
+
+The unit project uses TUnit with Microsoft Testing Platform and awaited TUnit Assertions. The repository `global.json` selects the .NET 10 SDK; the .NET 8, .NET 9, and .NET 10 runtimes are needed to run every target.
+
+Restore, build, and run the complete unit suite from the repository root:
+
+```powershell
+dotnet restore test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj
+dotnet build test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -c Release --no-restore
+dotnet test test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -c Release --no-build
+```
+
+Use `-f net8.0`, `-f net9.0`, or `-f net10.0` to run one target. Use a TUnit tree-node filter for a focused run:
+
+```powershell
+dotnet test test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -c Release -f net8.0 --no-build --treenode-filter "/*/*/OpenSearchJsonFormatterTests/*"
+```
+
+For an IDE-free debug session, replace `dotnet test` with `dotnet run --project`, put runner arguments after `--`, and attach a debugger to the launched test executable if required:
+
+```powershell
+dotnet run --project test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -c Debug -f net8.0 -- --treenode-filter "/*/*/OpenSearchJsonFormatterTests/*"
+```
+
+TRX and Cobertura outputs must be attributable to one target, so give each target distinct paths:
+
+```powershell
+dotnet test test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -c Release -f net8.0 --no-build --report-trx --results-directory artifacts/test-results/unit/net8.0 --coverage --coverage-output-format cobertura --coverage-output "$PWD/artifacts/coverage/unit/net8.0.cobertura.xml"
+```
+
+CI executes the same unit project once per target and uploads its TRX and Cobertura files. The integration-test project is intentionally excluded from this migration and requires separate, integration-specific processing later.
 
 ## More information
 

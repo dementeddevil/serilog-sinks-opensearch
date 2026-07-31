@@ -11,6 +11,7 @@
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
+/artifacts/
 x64/
 x86/
 build/
@@ -193,3 +194,9 @@ project.lock.json
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp

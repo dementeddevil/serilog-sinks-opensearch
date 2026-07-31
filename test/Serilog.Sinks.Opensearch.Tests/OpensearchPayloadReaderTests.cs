@@ -1,35 +1,35 @@
-﻿using System;
+﻿using System.Threading.Tasks;
+using System;
 using System.IO;
 using System.Text;
-using FluentAssertions;
 using Serilog.Sinks.OpenSearch.Durable;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests;
 
-public class OpenSearchPayloadReaderTests : IDisposable
+public class OpenSearchPayloadReaderTests
 {
+    private const string BufferFileKey = nameof(BufferFileKey);
     private readonly string _tempFileFullPathTemplate;
-    private string _bufferFileName;
 
     public OpenSearchPayloadReaderTests()
     {
         _tempFileFullPathTemplate = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")) + "-{0}.json";
     }
 
-    public void Dispose()
+    [After(Test)]
+    public void Cleanup()
     {
-        if (!string.IsNullOrEmpty(_bufferFileName))
+        if (TestContext.Current?.StateBag.TryRemove(BufferFileKey, out var value) == true && value is string bufferFileName)
         {
-            System.IO.File.Delete(_bufferFileName);
+            System.IO.File.Delete(bufferFileName);
         }
     }
 
-    [Theory]
-    [InlineData(RollingInterval.Day)]
-    [InlineData(RollingInterval.Hour)]
-    [InlineData(RollingInterval.Minute)]
-    public void ReadPayload_ShouldReadSpecifiedTypesOfRollingFile(RollingInterval rollingInterval)
+    [Test]
+    [Arguments(RollingInterval.Day)]
+    [Arguments(RollingInterval.Hour)]
+    [Arguments(RollingInterval.Minute)]
+    public async Task ReadPayload_ShouldReadSpecifiedTypesOfRollingFile(RollingInterval rollingInterval)
     {
         // Arrange
         var format = rollingInterval.GetFormat();
@@ -43,31 +43,32 @@ public class OpenSearchPayloadReaderTests : IDisposable
         {
             rollingInterval.ToString()
         };
-        _bufferFileName = string.Format(_tempFileFullPathTemplate,
+        var bufferFileName = string.Format(_tempFileFullPathTemplate,
             string.IsNullOrEmpty(format) ? string.Empty : new DateTime(2000, 1, 1).ToString(format));
+        TestContext.Current!.StateBag[BufferFileKey] = bufferFileName;
         // Important to use UTF8 with BOM if we are starting from 0 position 
-        System.IO.File.WriteAllLines(_bufferFileName, lines, new UTF8Encoding(true));
+        System.IO.File.WriteAllLines(bufferFileName, lines, new UTF8Encoding(true));
 
         // Act
-        var fileSetPosition = new FileSetPosition(0, _bufferFileName);
+        var fileSetPosition = new FileSetPosition(0, bufferFileName);
         var count = 0;
         var payload = payloadReader.ReadPayload(int.MaxValue,
             null,
             ref fileSetPosition,
             ref count,
-            _bufferFileName);
+            bufferFileName);
 
         // Assert
         // Thus we ensure that file was properly handled by PayloadReader  
-        payload.Count.Should().Be(lines.Length * 2);
-        payload[1].Should().Be(lines[0]);
+        await Assert.That(payload.Count).IsEqualTo(lines.Length * 2);
+        await Assert.That(payload[1]).IsEqualTo(lines[0]);
     }
 
-    [Theory]
-    [InlineData(RollingInterval.Infinite)]
-    [InlineData(RollingInterval.Year)]
-    [InlineData(RollingInterval.Month)]
-    public void OpenSearchPayloadReader_CannotUseRollingIntervalLessFrequentThanDay(RollingInterval rollingInterval)
+    [Test]
+    [Arguments(RollingInterval.Infinite)]
+    [Arguments(RollingInterval.Year)]
+    [Arguments(RollingInterval.Month)]
+    public async Task OpenSearchPayloadReader_CannotUseRollingIntervalLessFrequentThanDay(RollingInterval rollingInterval)
     {
         // Arrange
 
@@ -80,7 +81,8 @@ public class OpenSearchPayloadReaderTests : IDisposable
             rollingInterval);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
+        await Assert.That(act)
+            .Throws<ArgumentException>()
             .WithMessage("Rolling intervals less frequent than RollingInterval.Day are not supported");
     }
 }

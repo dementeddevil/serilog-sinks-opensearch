@@ -1,7 +1,7 @@
-﻿using System;
+﻿using System.Threading.Tasks;
+using System;
 using System.Runtime.Serialization;
 using OpenSearch.Net;
-using FluentAssertions;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
 
 namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
@@ -13,7 +13,7 @@ namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
             _options.Serializer = serializer;
         }
 
-        public void ThrowAndLogAndCatchBulkOutput(string exceptionMessage)
+        public async Task ThrowAndLogAndCatchBulkOutput(string exceptionMessage)
         {
             var loggerConfig = new LoggerConfiguration()
                 .MinimumLevel.Debug()
@@ -43,43 +43,40 @@ namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
                 logger.Error("Test exception. Should not contain an embedded exception object.");
             }
 
-            var postedEvents = this.GetPostedLogEvents(expectedCount: 2);
+            var postedEvents = await this.GetPostedLogEvents(expectedCount: 2);
             Console.WriteLine("BULK OUTPUT BEGIN ==========");
             foreach (var post in _seenHttpPosts)
                 Console.WriteLine(post);
             Console.WriteLine("BULK OUTPUT END ============");
 
             var firstEvent = postedEvents[0];
-            firstEvent.Exceptions.Should().NotBeNull().And.HaveCount(3);
-            firstEvent.Exceptions[0].Message.Should().NotBeNullOrWhiteSpace()
-                .And.Be(exceptionMessage);
+            await Assert.That(firstEvent.Exceptions).IsNotNull().And.Count().IsEqualTo(3);
+            await Assert.That(firstEvent.Exceptions[0].Message).IsNotNullOrWhiteSpace().And.IsEqualTo(exceptionMessage);
             var realException = firstEvent.Exceptions[0];
 #if !NO_SERIALIZATION
 #if NETFRAMEWORK
-            realException.ExceptionMethod.Should().NotBeNull();
-            realException.ExceptionMethod.Name.Should().NotBeNullOrWhiteSpace();
-            realException.ExceptionMethod.AssemblyName.Should().NotBeNullOrWhiteSpace();
-            realException.ExceptionMethod.AssemblyVersion.Should().NotBeNullOrWhiteSpace();
-            realException.ExceptionMethod.ClassName.Should().NotBeNullOrWhiteSpace();
-            realException.ExceptionMethod.Signature.Should().NotBeNullOrWhiteSpace();
-            realException.ExceptionMethod.MemberType.Should().BeGreaterThan(0);
+            await Assert.That(realException.ExceptionMethod).IsNotNull();
+            await Assert.That(realException.ExceptionMethod.Name).IsNotNullOrWhiteSpace();
+            await Assert.That(realException.ExceptionMethod.AssemblyName).IsNotNullOrWhiteSpace();
+            await Assert.That(realException.ExceptionMethod.AssemblyVersion).IsNotNullOrWhiteSpace();
+            await Assert.That(realException.ExceptionMethod.ClassName).IsNotNullOrWhiteSpace();
+            await Assert.That(realException.ExceptionMethod.Signature).IsNotNullOrWhiteSpace();
+            await Assert.That(realException.ExceptionMethod.MemberType).IsGreaterThan(0);
 #endif
             var nastyException = firstEvent.Exceptions[1];
-            nastyException.Depth.Should().Be(1);
-            nastyException.Message.Should().Be("nasty inner exception");
-            nastyException.StackTraceString.Should().Be("stack trace string");
-            nastyException.HelpUrl.Should().Be("help url");
-            nastyException.RemoteStackTraceString.Should().Be("remote stack trace string");
-            nastyException.RemoteStackIndex.Should().Be(1);
-            nastyException.ClassName.Should().Be("classname nasty exception");
-            nastyException.HResult.Should().Be(123123);
-            nastyException.Source.Should().Be("source");
+            await Assert.That(nastyException.Depth).IsEqualTo(1);
+            await Assert.That(nastyException.Message).IsEqualTo("nasty inner exception");
+            await Assert.That(nastyException.StackTraceString).IsEqualTo("stack trace string");
+            await Assert.That(nastyException.HelpUrl).IsEqualTo("help url");
+            await Assert.That(nastyException.RemoteStackTraceString).IsEqualTo("remote stack trace string");
+            await Assert.That(nastyException.RemoteStackIndex).IsEqualTo(1);
+            await Assert.That(nastyException.ClassName).IsEqualTo("classname nasty exception");
+            await Assert.That(nastyException.HResult).IsEqualTo(123123);
+            await Assert.That(nastyException.Source).IsEqualTo("source");
 #endif
-            //nastyException.WatsonBuckets.Should().BeEquivalentTo(new byte[] {1,2,3});
-
-
+            // await Assert.That(nastyException.WatsonBuckets).IsEquivalentTo(new byte[] { 1, 2, 3 });
             var secondEvent = postedEvents[1];
-            secondEvent.Exceptions.Should().BeNullOrEmpty();
+            await Assert.That(secondEvent.Exceptions == null || secondEvent.Exceptions.Count == 0).IsTrue();
         }
     }
 

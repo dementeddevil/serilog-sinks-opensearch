@@ -1,7 +1,6 @@
-﻿using System;
-using FluentAssertions;
+﻿using System.Threading.Tasks;
+using System;
 using Serilog.Sinks.OpenSearch.Tests.Stubs;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
@@ -26,25 +25,30 @@ namespace Serilog.Sinks.OpenSearch.Tests.Templating
                 logger.Error("Test exception. Should not contain an embedded exception object.");
             }
 
-            this._seenHttpPosts.Should().NotBeNullOrEmpty().And.HaveCount(1);
-            this._seenHttpPuts.Should().NotBeNullOrEmpty().And.HaveCount(1);
-            this._seenHttpHeads.Should().NotBeNullOrEmpty().And.HaveCount(1);
             _templatePut = this._seenHttpPuts[0];
             
         }
 
-        [Fact]
-        public void TemplatePutToCorrectUrl()
+        [Before(Test)]
+        public async Task AssertRegistration()
         {
-            var uri = this._templatePut.Item1;
-            uri.AbsolutePath.Should().Be("/_template/dailyindex-logs-template");
+            await Assert.That(this._seenHttpPosts).IsNotNull().And.IsNotEmpty().And.Count().IsEqualTo(1);
+            await Assert.That(this._seenHttpPuts).IsNotNull().And.IsNotEmpty().And.Count().IsEqualTo(1);
+            await Assert.That(this._seenHttpHeads).IsNotNull().And.IsNotEmpty().And.Count().IsEqualTo(1);
         }
 
-        [Fact]
-        public void TemplateMatchShouldReflectConfiguredIndexFormat()
+        [Test]
+        public async Task TemplatePutToCorrectUrl()
+        {
+            var uri = this._templatePut.Item1;
+            await Assert.That(uri.AbsolutePath).IsEqualTo("/_template/dailyindex-logs-template");
+        }
+
+        [Test]
+        public async Task TemplateMatchShouldReflectConfiguredIndexFormat()
         {
             var json = this._templatePut.Item2;
-            json.Should().Contain(@"""index_patterns"":[""dailyindex-*-mycompany""]");
+            await Assert.That(json).Contains(@"""index_patterns"":[""dailyindex-*-mycompany""]");
         }
 
     }

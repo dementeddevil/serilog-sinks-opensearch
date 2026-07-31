@@ -1,11 +1,11 @@
-﻿using Serilog.Events;
+﻿using System.Threading.Tasks;
+using Serilog.Events;
 using Serilog.Parsing;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Serilog.Formatting.OpenSearch;
-using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests
 {
@@ -78,7 +78,7 @@ namespace Serilog.Sinks.OpenSearch.Tests
             properties: Enumerable.Empty<LogEventProperty>()
         );
 
-        static void CheckProperties(Func<LogEvent> logEventProvider, OpenSearchJsonFormatter formatter, Action<string> assert)
+        static async Task CheckProperties(Func<LogEvent> logEventProvider, OpenSearchJsonFormatter formatter, Func<string, Task> assert)
         {
             string result = null;
 
@@ -91,168 +91,154 @@ namespace Serilog.Sinks.OpenSearch.Tests
                 result = stringWriter.ToString();
             }
 
-            assert(result);
+            await assert(result);
         }
 
-        static void CheckProperties(OpenSearchJsonFormatter formatter, Action<string> assert) =>
+        static Task CheckProperties(OpenSearchJsonFormatter formatter, Func<string, Task> assert) =>
             CheckProperties(CreateLogEvent, formatter, assert);
 
-        static void ContainsProperty(string propertyToCheck, string result) =>
-            Assert.Contains
-            (
-                propertyToCheck,
-                result,
-                StringComparison.CurrentCultureIgnoreCase
-            );
-        static void DoesNotContainsProperty(string propertyToCheck, string result) =>
-            Assert.DoesNotContain
-            (
-                propertyToCheck,
-                result,
-                StringComparison.CurrentCultureIgnoreCase
-            );
-
+        static async Task ContainsProperty(string propertyToCheck, string result) =>
+            await Assert.That(result.IndexOf(propertyToCheck, StringComparison.CurrentCultureIgnoreCase)).IsGreaterThanOrEqualTo(0);
+        static async Task DoesNotContainsProperty(string propertyToCheck, string result) =>
+            await Assert.That(result.IndexOf(propertyToCheck, StringComparison.CurrentCultureIgnoreCase)).IsLessThan(0);
         static string FormatProperty(string property) => $"\"{property}\":";
         #endregion
 
-        [Theory]
-        [InlineData(OpenSearchJsonFormatter.RenderedMessagePropertyName)]
-        [InlineData(OpenSearchJsonFormatter.MessageTemplatePropertyName)]
-        [InlineData(OpenSearchJsonFormatter.TimestampPropertyName)]
-        [InlineData(OpenSearchJsonFormatter.LevelPropertyName)]
-        public void DefaultJsonFormater_Should_Render_default_properties(string propertyToCheck)
+        [Test]
+        [Arguments(OpenSearchJsonFormatter.RenderedMessagePropertyName)]
+        [Arguments(OpenSearchJsonFormatter.MessageTemplatePropertyName)]
+        [Arguments(OpenSearchJsonFormatter.TimestampPropertyName)]
+        [Arguments(OpenSearchJsonFormatter.LevelPropertyName)]
+        public async Task DefaultJsonFormater_Should_Render_default_properties(string propertyToCheck)
         {
-            CheckProperties(
+            await CheckProperties(
                 new OpenSearchJsonFormatter(),
                 result => ContainsProperty(FormatProperty(propertyToCheck), result));
         }
 
-        [Fact]
-        public void When_disabling_renderMessage_Should_not_render_message_but_others()
+        [Test]
+        public async Task When_disabling_renderMessage_Should_not_render_message_but_others()
         {
-            CheckProperties(
+            await CheckProperties(
                 new OpenSearchJsonFormatter(renderMessage: false),
-                result =>
+                async result =>
                 {
-                    DoesNotContainsProperty(FormatProperty(OpenSearchJsonFormatter.RenderedMessagePropertyName), result);
-                    ContainsProperty(FormatProperty(OpenSearchJsonFormatter.MessageTemplatePropertyName), result);
-                    ContainsProperty(FormatProperty(OpenSearchJsonFormatter.TimestampPropertyName), result);
-                    ContainsProperty(FormatProperty(OpenSearchJsonFormatter.LevelPropertyName), result);
+                    await DoesNotContainsProperty(FormatProperty(OpenSearchJsonFormatter.RenderedMessagePropertyName), result);
+                    await ContainsProperty(FormatProperty(OpenSearchJsonFormatter.MessageTemplatePropertyName), result);
+                    await ContainsProperty(FormatProperty(OpenSearchJsonFormatter.TimestampPropertyName), result);
+                    await ContainsProperty(FormatProperty(OpenSearchJsonFormatter.LevelPropertyName), result);
                 });
         }
 
-        [Fact]
-        public void When_disabling_renderMessageTemplate_Should_not_render_message_template_but_others()
+        [Test]
+        public async Task When_disabling_renderMessageTemplate_Should_not_render_message_template_but_others()
         {
-            CheckProperties(
+            await CheckProperties(
                 new OpenSearchJsonFormatter(renderMessageTemplate: false),
-                result =>
+                async result =>
                 {
-                    DoesNotContainsProperty(FormatProperty(OpenSearchJsonFormatter.MessageTemplatePropertyName), result);
-                    ContainsProperty(FormatProperty(OpenSearchJsonFormatter.RenderedMessagePropertyName), result);
-                    ContainsProperty(FormatProperty(OpenSearchJsonFormatter.TimestampPropertyName), result);
-                    ContainsProperty(FormatProperty(OpenSearchJsonFormatter.LevelPropertyName), result);
+                    await DoesNotContainsProperty(FormatProperty(OpenSearchJsonFormatter.MessageTemplatePropertyName), result);
+                    await ContainsProperty(FormatProperty(OpenSearchJsonFormatter.RenderedMessagePropertyName), result);
+                    await ContainsProperty(FormatProperty(OpenSearchJsonFormatter.TimestampPropertyName), result);
+                    await ContainsProperty(FormatProperty(OpenSearchJsonFormatter.LevelPropertyName), result);
                 });
         }
 
-        [Fact]
-        public void DefaultJsonFormater_Should_enclose_object()
+        [Test]
+        public async Task DefaultJsonFormater_Should_enclose_object()
         {
-            CheckProperties(
+            await CheckProperties(
                 new OpenSearchJsonFormatter(),
-                result =>
+                async result =>
                 {
-                    Assert.StartsWith("{", result);
-                    Assert.EndsWith($"}}{Environment.NewLine}", result);
+                    await Assert.That(result).StartsWith("{");
+                    await Assert.That(result).EndsWith($"}}{Environment.NewLine}");
                 });
         }
 
-        [Fact]
-        public void When_omitEnclosingObject_should_not_enclose_object()
+        [Test]
+        public async Task When_omitEnclosingObject_should_not_enclose_object()
         {
-            CheckProperties(
+            await CheckProperties(
                 new OpenSearchJsonFormatter(omitEnclosingObject: true),
-                result =>
+                async result =>
                 {
-                    Assert.StartsWith("\"", result);
-                    Assert.EndsWith("\"", result);
+                    await Assert.That(result).StartsWith("\"");
+                    await Assert.That(result).EndsWith("\"");
                 });
         }
 
-        [Fact]
-        public void When_provide_closing_delimiter_should_use_it()
+        [Test]
+        public async Task When_provide_closing_delimiter_should_use_it()
         {
-            CheckProperties(
+            await CheckProperties(
                 new OpenSearchJsonFormatter(closingDelimiter: "closingDelimiter"),
-                result =>
+                async result =>
                 {
-                    Assert.EndsWith("closingDelimiter", result);
+                    await Assert.That(result).EndsWith("closingDelimiter");
                 });
         }
 
-        [Fact]
-        public void DefaultJsonFormater_Should_Render_Exceptions()
+        [Test]
+        public async Task DefaultJsonFormater_Should_Render_Exceptions()
         {
-            CheckProperties(
+            await CheckProperties(
                 () => CreateLogEventWithException(CreateThrownException()),
                 new OpenSearchJsonFormatter(),
-                result =>
+                async result =>
                 {
                     string exceptionsProperty = FormatProperty("exceptions");
-                    ContainsProperty(exceptionsProperty, result);
+                    await ContainsProperty(exceptionsProperty, result);
 
             
                     string exceptionsValue = result.Substring(result.IndexOf(exceptionsProperty) + exceptionsProperty.Length);
 
                     // Check the exceptions property is a JSON array
-                    Assert.StartsWith("[", exceptionsValue);
-
+                    await Assert.That(exceptionsValue).StartsWith("[");
                     string stackTraceProperty = FormatProperty("StackTraceString");
-                    ContainsProperty(stackTraceProperty, exceptionsValue);
-                    DoesNotContainsProperty(FormatProperty("StackTrace"), exceptionsValue);
+                    await ContainsProperty(stackTraceProperty, exceptionsValue);
+                    await DoesNotContainsProperty(FormatProperty("StackTrace"), exceptionsValue);
 
                     string stackTraceValue = exceptionsValue.Substring(exceptionsValue.IndexOf(stackTraceProperty) + stackTraceProperty.Length);
 
                     // Check the StackTraceString property is a JSON string
-                    Assert.StartsWith("\"", stackTraceValue);
+                    await Assert.That(stackTraceValue).StartsWith("\"");
                 });
         }
 
-        [Theory]
-        [MemberData(nameof(TestExceptions))]
-        public void DefaultJsonFormater_Should_Render_Exceptions_With_StackTrace_As_Array(Exception exception)
+        [Test]
+        [MethodDataSource(nameof(TestExceptions))]
+        public async Task DefaultJsonFormater_Should_Render_Exceptions_With_StackTrace_As_Array(Exception exception)
         {
-            CheckProperties(
+            await CheckProperties(
                 () => CreateLogEventWithException(exception),
                 new OpenSearchJsonFormatter(formatStackTraceAsArray: true),
-                result =>
+                async result =>
                 {
                     string exceptionsProperty = FormatProperty("exceptions");
-                    ContainsProperty(exceptionsProperty, result);
+                    await ContainsProperty(exceptionsProperty, result);
 
 
                     string exceptionsValue = result.Substring(result.IndexOf(exceptionsProperty) + exceptionsProperty.Length);
 
                     // Check the exceptions property is a JSON array
-                    Assert.StartsWith("[", exceptionsValue);
-
+                    await Assert.That(exceptionsValue).StartsWith("[");
                     string stackTraceProperty = FormatProperty("StackTrace");
-                    ContainsProperty(stackTraceProperty, exceptionsValue);
-                    DoesNotContainsProperty(FormatProperty("StackTraceString"), exceptionsValue);
+                    await ContainsProperty(stackTraceProperty, exceptionsValue);
+                    await DoesNotContainsProperty(FormatProperty("StackTraceString"), exceptionsValue);
 
                     string stackTraceValue = exceptionsValue.Substring(exceptionsValue.IndexOf(stackTraceProperty) + stackTraceProperty.Length);
 
                     // Check the StackTrace property is a JSON array
-                    Assert.StartsWith("[", stackTraceValue);
+                    await Assert.That(stackTraceValue).StartsWith("[");
                 });
         }
 
-        public static IEnumerable<object[]> TestExceptions =>
-            new List<object[]>
-            {
-                new object[] { CreateThrownException() },
-                new object[] { CreateThrownExceptionWithNotThrownInner() },
-                new object[] { new Exception("Not thrown exception message") }
-            };
+        public static IEnumerable<Func<Exception>> TestExceptions()
+        {
+            yield return () => CreateThrownException();
+            yield return () => CreateThrownExceptionWithNotThrownInner();
+            yield return () => new Exception("Not thrown exception message");
+        }
     }
 }
