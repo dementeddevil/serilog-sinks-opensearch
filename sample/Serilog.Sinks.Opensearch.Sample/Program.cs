@@ -41,6 +41,9 @@ namespace Serilog.Sinks.OpenSearch.Sample
                         NumberOfReplicas = 1,
                         NumberOfShards = 2,
                         RetryTimeLimit = TimeSpan.FromMinutes(2),
+                        // TraceId and SpanId are emitted by default; each can be disabled independently.
+                        RenderTraceId = true,
+                        RenderSpanId = true,
                         //BufferBaseFilename = "./buffer",
                        // RegisterTemplateFailure = RegisterTemplateRecovery.FailSink,
                         FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),

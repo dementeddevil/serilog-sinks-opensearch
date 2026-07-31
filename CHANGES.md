@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Release `Serilog.Formatting.OpenSearch` 3.0 and `Serilog.Sinks.OpenSearch` 2.0 with first-class Serilog `TraceId` and `SpanId` output enabled by default.
+- Add independent `RenderTraceId` and `RenderSpanId` opt-outs; first-class IDs win case-insensitive property-name collisions while custom and compact formatters retain exclusive output ownership.
+
 - Replace `Serilog.Sinks.PeriodicBatching` with Serilog 4.4 native batching for non-durable sinks.
 - Add nullable `RetryTimeLimit` configuration and native temporary, permanent, and final failure reporting/fallback support.
 - Whole-batch transport failures now propagate for retry; legacy failure handlers remain for rejected items in valid bulk responses.

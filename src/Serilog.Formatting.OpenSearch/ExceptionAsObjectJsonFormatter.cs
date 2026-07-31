@@ -45,6 +45,8 @@ namespace Serilog.Formatting.OpenSearch
         /// <param name="renderMessageTemplate">If true, the message template will be rendered and written to the output as a
         /// property named RenderedMessageTemplate.</param>
         /// <param name="formatStackTraceAsArray">If true, splits the StackTrace by new line and writes it as a an array of strings</param>
+        /// <param name="renderTraceId">If true, a first-class trace identifier is written when present.</param>
+        /// <param name="renderSpanId">If true, a first-class span identifier is written when present.</param>
         public ExceptionAsObjectJsonFormatter(bool omitEnclosingObject = false, 
             string closingDelimiter = null, 
             bool renderMessage = false, 
@@ -52,8 +54,10 @@ namespace Serilog.Formatting.OpenSearch
             ISerializer serializer = null, 
             bool inlineFields = false, 
             bool renderMessageTemplate = true,
-            bool formatStackTraceAsArray = false) 
-            : base(omitEnclosingObject, closingDelimiter, renderMessage, formatProvider, serializer, inlineFields, renderMessageTemplate, formatStackTraceAsArray)
+            bool formatStackTraceAsArray = false,
+            bool renderTraceId = true,
+            bool renderSpanId = true)
+            : base(omitEnclosingObject, closingDelimiter, renderMessage, formatProvider, serializer, inlineFields, renderMessageTemplate, formatStackTraceAsArray, false, renderTraceId, renderSpanId)
         {
         }
 

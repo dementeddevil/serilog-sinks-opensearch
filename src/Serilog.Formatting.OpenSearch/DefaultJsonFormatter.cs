@@ -15,6 +15,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -36,6 +37,8 @@ namespace Serilog.Formatting.OpenSearch
         readonly string _closingDelimiter;
         readonly bool _renderMessage;
         readonly bool _renderMessageTemplate;
+        readonly bool _renderTraceId;
+        readonly bool _renderSpanId;
         readonly IFormatProvider _formatProvider;
         readonly IDictionary<Type, Action<object, bool, TextWriter>> _literalWriters;
 
@@ -53,17 +56,23 @@ namespace Serilog.Formatting.OpenSearch
         /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
         /// <param name="renderMessageTemplate">If true, the message template will be rendered and written to the output as a
         /// property named RenderedMessageTemplate.</param>
+        /// <param name="renderTraceId">If true, a first-class trace identifier is written when present.</param>
+        /// <param name="renderSpanId">If true, a first-class span identifier is written when present.</param>
         protected DefaultJsonFormatter(
             bool omitEnclosingObject = false,
             string closingDelimiter = null,
             bool renderMessage = true,
             IFormatProvider formatProvider = null,
-            bool renderMessageTemplate = true)
+            bool renderMessageTemplate = true,
+            bool renderTraceId = true,
+            bool renderSpanId = true)
         {
             _omitEnclosingObject = omitEnclosingObject;
             _closingDelimiter = closingDelimiter ?? Environment.NewLine;
             _renderMessage = renderMessage;
             _renderMessageTemplate = renderMessageTemplate;
+            _renderTraceId = renderTraceId;
+            _renderSpanId = renderSpanId;
             _formatProvider = formatProvider;
 
             _literalWriters = new Dictionary<Type, Action<object, bool, TextWriter>>
@@ -108,6 +117,13 @@ namespace Serilog.Formatting.OpenSearch
             WriteTimestamp(logEvent.Timestamp, ref delim, output);
             WriteLevel(logEvent.Level, ref delim, output);
 
+            var emitTraceId = _renderTraceId && logEvent.TraceId.HasValue && logEvent.TraceId.Value != default(ActivityTraceId);
+            var emitSpanId = _renderSpanId && logEvent.SpanId.HasValue && logEvent.SpanId.Value != default(ActivitySpanId);
+            if (emitTraceId)
+                WriteTraceId(logEvent.TraceId.Value, ref delim, output);
+            if (emitSpanId)
+                WriteSpanId(logEvent.SpanId.Value, ref delim, output);
+
             if(_renderMessageTemplate)
             {
                 WriteMessageTemplate(logEvent.MessageTemplate.Text, ref delim, output);
@@ -122,8 +138,9 @@ namespace Serilog.Formatting.OpenSearch
             if (logEvent.Exception != null)
                 WriteException(logEvent.Exception, ref delim, output);
 
-            if (logEvent.Properties.Count != 0)
-                WriteProperties(logEvent.Properties, output);
+            var outputProperties = FilterTraceContextProperties(logEvent.Properties, emitTraceId, emitSpanId);
+            if (outputProperties.Count != 0)
+                WriteProperties(outputProperties, output);
 
             var tokensWithFormat = logEvent.MessageTemplate.Tokens
                 .OfType<PropertyToken>()
@@ -141,6 +158,50 @@ namespace Serilog.Formatting.OpenSearch
                 output.Write("}");
                 output.Write(_closingDelimiter);
             }
+        }
+
+        static IReadOnlyDictionary<string, LogEventPropertyValue> FilterTraceContextProperties(
+            IReadOnlyDictionary<string, LogEventPropertyValue> properties, bool emitTraceId, bool emitSpanId)
+        {
+            var hasCollision = properties.Keys.Any(name =>
+                emitTraceId && string.Equals(name, "TraceId", StringComparison.OrdinalIgnoreCase) ||
+                emitSpanId && string.Equals(name, "SpanId", StringComparison.OrdinalIgnoreCase));
+            if (!hasCollision)
+                return properties;
+
+            var filtered = new Dictionary<string, LogEventPropertyValue>(properties.Count, StringComparer.Ordinal);
+            foreach (var property in properties)
+            {
+                if (emitTraceId && string.Equals(property.Key, "TraceId", StringComparison.OrdinalIgnoreCase) ||
+                    emitSpanId && string.Equals(property.Key, "SpanId", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                filtered.Add(property.Key, property.Value);
+            }
+            return filtered;
+        }
+
+        /// <summary>Writes the event's first-class trace identifier.</summary>
+        protected virtual void WriteTraceId(ActivityTraceId traceId, ref string delim, TextWriter output)
+        {
+            WriteIdentifier("TraceId", traceId.ToString(), ref delim, output);
+        }
+
+        /// <summary>Writes the event's first-class span identifier.</summary>
+        protected virtual void WriteSpanId(ActivitySpanId spanId, ref string delim, TextWriter output)
+        {
+            WriteIdentifier("SpanId", spanId.ToString(), ref delim, output);
+        }
+
+        /// <summary>Writes a canonical hexadecimal identifier without general-purpose literal dispatch.</summary>
+        protected static void WriteIdentifier(string name, string value, ref string delim, TextWriter output)
+        {
+            output.Write(delim);
+            output.Write('"');
+            output.Write(name);
+            output.Write("\":\"");
+            output.Write(value);
+            output.Write('"');
+            delim = ",";
         }
 
         /// <summary>

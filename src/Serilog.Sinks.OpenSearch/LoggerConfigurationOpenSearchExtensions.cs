@@ -151,6 +151,8 @@ namespace Serilog
         /// <param name="detectOpenSearchVersion">Turns on detection of opensearch version via background HTTP call. This will also set `TypeName` automatically, according to the version of OpenSearch.</param>
         /// <param name="batchAction">Configures the OpType being used when inserting document in batch. Must be set to create for data streams.</param>
         /// <param name="retryTimeLimit">Maximum time native batching retries failed batches; null uses Serilog's default.</param>
+        /// <param name="renderTraceId">Whether the built-in formatter writes first-class trace identifiers.</param>
+        /// <param name="renderSpanId">Whether the built-in formatter writes first-class span identifiers.</param>
         /// <returns>LoggerConfiguration object</returns>
         /// <exception cref="ArgumentNullException"><paramref name="nodeUris"/> is <see langword="null" />.</exception>
         public static LoggerConfiguration OpenSearch(
@@ -191,7 +193,9 @@ namespace Serilog
             Dictionary<string,string> templateCustomSettings = null,
             OpenOpType batchAction = OpenOpType.Index,
             bool detectOpenSearchVersion = true,
-            TimeSpan? retryTimeLimit = null)
+            TimeSpan? retryTimeLimit = null,
+            bool renderTraceId = true,
+            bool renderSpanId = true)
         {
             if (string.IsNullOrEmpty(nodeUris))
                 throw new ArgumentNullException(nameof(nodeUris), "No OpenSearch node(s) specified.");
@@ -257,6 +261,8 @@ namespace Serilog
             options.EmitEventFailure = emitEventFailure;
             options.QueueSizeLimit = queueSizeLimit;
             options.RetryTimeLimit = retryTimeLimit;
+            options.RenderTraceId = renderTraceId;
+            options.RenderSpanId = renderSpanId;
             options.PipelineName = pipelineName;
 
             options.AutoRegisterTemplate = autoRegisterTemplate;

@@ -170,6 +170,12 @@ namespace Serilog.Sinks.OpenSearch
         /// </summary>
         public bool InlineFields { get; set; }
 
+        /// <summary>When true, first-class Serilog trace identifiers are written by the built-in formatter.</summary>
+        public bool RenderTraceId { get; set; }
+
+        /// <summary>When true, first-class Serilog span identifiers are written by the built-in formatter.</summary>
+        public bool RenderSpanId { get; set; }
+
         /// <summary>
         /// The minimum log event level required in order to write an event to the sink. Ignored when LoggingLevelSwitch is specified.
         /// </summary>
@@ -309,6 +315,8 @@ namespace Serilog.Sinks.OpenSearch
             this.BufferFileCountLimit = 31;
             this.BufferFileSizeLimitBytes = 100L * 1024 * 1024;
             this.FormatStackTraceAsArray = false;
+            this.RenderTraceId = true;
+            this.RenderSpanId = true;
             this.ConnectionPool = new SingleNodeConnectionPool(_defaultNode);
             this.BufferFileRollingInterval = RollingInterval.Day;
         }

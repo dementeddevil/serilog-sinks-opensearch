@@ -211,6 +211,14 @@ CI executes the same unit project once per target and uploads its TRX and Cobert
 
 ## More information
 
+### Distributed trace context
+
+The built-in OpenSearch formatter writes Serilog's first-class `LogEvent.TraceId` and `LogEvent.SpanId` at the document root by default. `TraceId` is a 32-character lowercase hexadecimal value and `SpanId` is a 16-character lowercase hexadecimal value. A field is omitted when that identifier was not captured; the formatter uses the event's captured context and does not consult `Activity.Current` while formatting.
+
+Set `OpenSearchSinkOptions.RenderTraceId` or `RenderSpanId` to `false` to disable either field independently. The long `WriteTo.OpenSearch()` overload exposes the matching `renderTraceId` and `renderSpanId` named arguments. When an emitted first-class identifier collides with a user property named `TraceId` or `SpanId` (case-insensitively), the first-class identifier wins; otherwise the user property is preserved. Review index mappings before rollout if similarly named fields already exist with another type.
+
+These controls apply only to the built-in `OpenSearchJsonFormatter`. A configured custom, durable-custom, or compact formatter owns its output completely and is not post-processed by the sink.
+
 * [Basic information](https://github.com/dementeddevil/serilog-sinks-opensearch/wiki/basic-setup) on how to configure and use this sink.
 * [Configuration options](https://github.com/dementeddevil/serilog-sinks-opensearch/wiki/Configure-the-sink) which you can use.
 * How to use the [durability](https://github.com/dementeddevil/serilog-sinks-opensearch/wiki/durability) mode.
@@ -279,6 +287,8 @@ In your `appsettings.json` file, under the `Serilog` node, :
           "batchAction": "Create",
           "period": 2,
           "inlineFields": true,
+          "renderTraceId": true,
+          "renderSpanId": true,
           "restrictedToMinimumLevel": "Warning",
           "bufferBaseFilename":  "C:/Temp/docker-elk-serilog-web-buffer",
           "bufferFileSizeLimitBytes": 5242880,

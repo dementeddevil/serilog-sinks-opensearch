@@ -7,12 +7,17 @@ Testcontainers for .NET.
 
 | OpenSearch line | Docker image | Scenarios |
 |---|---|---|
-| 1.x | `opensearchproject/opensearch:1.3.20` | Explicit OSv1 template and detected-version template |
-| 2.x | `opensearchproject/opensearch:2.19.6` | Explicit OSv1 template and detected-version template |
+| 1.x | `opensearchproject/opensearch:1.3.20` | Explicit OSv1 template, detected-version template, and indexed trace context |
+| 2.x | `opensearchproject/opensearch:2.19.6` | Explicit OSv1 template, detected-version template, and indexed trace context |
 
 Each scenario verifies template registration, index-pattern compatibility,
 minimum-level filtering, final batch flushing, and indexed log levels. Security
 is disabled only inside the ephemeral test containers.
+
+The trace-context scenario verifies canonical first-class `TraceId` and
+`SpanId` values in indexed `_source`, omission on an untraced event, nested
+case-insensitive collision precedence and fallback, inline fields, and the
+independent `RenderTraceId` opt-out.
 
 ## Run
 

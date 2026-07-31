@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -55,6 +56,10 @@ namespace Serilog.Formatting.OpenSearch
         /// Timestamp property name
         /// </summary>
         public const string TimestampPropertyName = "@timestamp";
+        /// <summary>Trace identifier property name.</summary>
+        public const string TraceIdPropertyName = "TraceId";
+        /// <summary>Span identifier property name.</summary>
+        public const string SpanIdPropertyName = "SpanId";
 
         /// <summary>
         /// Construct a <see cref="OpenSearchJsonFormatter"/>.
@@ -74,6 +79,8 @@ namespace Serilog.Formatting.OpenSearch
         /// property named RenderedMessageTemplate.</param>
         /// <param name="formatStackTraceAsArray">If true, splits the StackTrace by new line and writes it as a an array of strings.</param>
         /// <param name="formatTimeSpanAsLong">If true, formats any TimeSpan values using the Ticks property as a long value.</param>
+        /// <param name="renderTraceId">If true, a first-class trace identifier is written when present.</param>
+        /// <param name="renderSpanId">If true, a first-class span identifier is written when present.</param>
         public OpenSearchJsonFormatter(
             bool omitEnclosingObject = false,
             string closingDelimiter = null,
@@ -83,8 +90,10 @@ namespace Serilog.Formatting.OpenSearch
             bool inlineFields = false,
             bool renderMessageTemplate = true,
             bool formatStackTraceAsArray = false,
-            bool formatTimeSpanAsLong = false)
-            : base(omitEnclosingObject, closingDelimiter, renderMessage, formatProvider, renderMessageTemplate)
+            bool formatTimeSpanAsLong = false,
+            bool renderTraceId = true,
+            bool renderSpanId = true)
+            : base(omitEnclosingObject, closingDelimiter, renderMessage, formatProvider, renderMessageTemplate, renderTraceId, renderSpanId)
         {
             _serializer = serializer;
             _inlineFields = inlineFields;
@@ -94,6 +103,18 @@ namespace Serilog.Formatting.OpenSearch
             {
                 AddLiteralWriter(typeof(TimeSpan), (v, w) => WriteTimeSpan((TimeSpan)v, w));
             }
+        }
+
+        /// <inheritdoc />
+        protected override void WriteTraceId(ActivityTraceId traceId, ref string delim, TextWriter output)
+        {
+            WriteIdentifier(TraceIdPropertyName, traceId.ToString(), ref delim, output);
+        }
+
+        /// <inheritdoc />
+        protected override void WriteSpanId(ActivitySpanId spanId, ref string delim, TextWriter output)
+        {
+            WriteIdentifier(SpanIdPropertyName, spanId.ToString(), ref delim, output);
         }
 
         /// <summary>

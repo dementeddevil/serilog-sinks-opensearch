@@ -15,6 +15,10 @@ namespace Serilog.Sinks.OpenSearch.IntegrationTests
         [Test]
         public Task DetectedVersionRegistersTemplateAndIndexesLogs() =>
             OpenSearchIntegrationScenarios.DetectedTemplateVersion(fixture);
+
+        [Test]
+        public Task IndexedDocumentsPreserveTraceContext() =>
+            TraceContextIntegrationScenarios.IndexedDocumentsPreserveTraceContext(fixture);
     }
 
     [ClassDataSource<OpenSearch2Fixture>(Shared = SharedType.PerClass)]
@@ -28,5 +32,9 @@ namespace Serilog.Sinks.OpenSearch.IntegrationTests
         [Test]
         public Task DetectedVersionRegistersTemplateAndIndexesLogs() =>
             OpenSearchIntegrationScenarios.DetectedTemplateVersion(fixture);
+
+        [Test]
+        public Task IndexedDocumentsPreserveTraceContext() =>
+            TraceContextIntegrationScenarios.IndexedDocumentsPreserveTraceContext(fixture);
     }
 }
