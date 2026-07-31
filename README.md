@@ -9,12 +9,14 @@ This repository contains two nuget packages: `Serilog.Sinks.OpenSearch` and `Ser
 * [Quick start](#quick-start)
   * [OpenSearch sinks](#opensearch-sinks)
   * [OpenSearch formatters](#opensearch-formatters)
-* [Development and unit tests](#development-and-unit-tests)
+* [Development and tests](#development-and-tests)
 * [More information](#more-information)
+  * [Distributed trace context](#distributed-trace-context)
   * [A note about fields inside OpenSearch](#a-note-about-fields-inside-opensearch)
   * [A note about Kibana](#a-note-about-kibana)
   * [JSON `appsettings.json` configuration](#json-appsettingsjson-configuration)
   * [Handling errors](#handling-errors)
+  * [Native batching, retry, and failure handling](#native-batching-retry-and-failure-handling)
   * [Breaking changes](#breaking-changes)
 
 ## What is this sink
@@ -29,6 +31,8 @@ The Serilog OpenSearch sink project is a sink (basically a writer) for the Seril
 * Durable mode; store the logevents first on disk before delivering them to OS making sure you never miss events if you have trouble connecting to your OS cluster.
 * Automatically create the right mappings for the best usage of the log events in OS or automatically upload your own custom mapping.
 * Versions 1 and 2 of OpenSearch supported. Version 1.0.0 of the sink targets netstandard2.0 and therefore can be run on any .NET Framework that supports it (both .NET Core and .NET Framework). The unit suite runs on .NET 8, .NET 9, and .NET 10.
+* Non-durable delivery uses Serilog 4's native batching, retry scheduling, failure listeners, and fallback chains.
+* The built-in formatter preserves Serilog's first-class `TraceId` and `SpanId` for distributed-trace correlation.
 
 
 ## Quick start
@@ -126,7 +130,10 @@ This example shows the options that are currently available when using the appSe
     <add key="serilog:write-to:OpenSearch.batchPostingLimit" value="50"/>
     <add key="serilog:write-to:OpenSearch.batchAction" value="Create"/><!-- "Index" is default -->
     <add key="serilog:write-to:OpenSearch.period" value="2"/>
+    <add key="serilog:write-to:OpenSearch.retryTimeLimit" value="00:10:00"/>
     <add key="serilog:write-to:OpenSearch.inlineFields" value="true"/>
+    <add key="serilog:write-to:OpenSearch.renderTraceId" value="true"/>
+    <add key="serilog:write-to:OpenSearch.renderSpanId" value="true"/>
     <add key="serilog:write-to:OpenSearch.restrictedToMinimumLevel" value="Warning"/>
     <add key="serilog:write-to:OpenSearch.bufferBaseFilename" value="C:\Temp\SerilogOpenSearchBuffer"/>
     <add key="serilog:write-to:OpenSearch.bufferFileSizeLimitBytes" value="5242880"/>
@@ -177,7 +184,7 @@ var loggerConfig = new LoggerConfiguration()
   .WriteTo.Console(new OpenSearchJsonFormatter());
 ```
 
-## Development and unit tests
+## Development and tests
 
 The unit project uses TUnit with Microsoft Testing Platform and awaited TUnit Assertions. The repository `global.json` selects the .NET 10 SDK; the .NET 8, .NET 9, and .NET 10 runtimes are needed to run every target.
 
@@ -186,13 +193,13 @@ Restore, build, and run the complete unit suite from the repository root:
 ```powershell
 dotnet restore test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj
 dotnet build test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -c Release --no-restore
-dotnet test test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -c Release --no-build
+dotnet test --project test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -c Release --no-build
 ```
 
 Use `-f net8.0`, `-f net9.0`, or `-f net10.0` to run one target. Use a TUnit tree-node filter for a focused run:
 
 ```powershell
-dotnet test test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -c Release -f net8.0 --no-build --treenode-filter "/*/*/OpenSearchJsonFormatterTests/*"
+dotnet test --project test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -c Release -f net8.0 --no-build --treenode-filter "/*/*/OpenSearchJsonFormatterTests/*"
 ```
 
 For an IDE-free debug session, replace `dotnet test` with `dotnet run --project`, put runner arguments after `--`, and attach a debugger to the launched test executable if required:
@@ -204,10 +211,20 @@ dotnet run --project test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearc
 TRX and Cobertura outputs must be attributable to one target, so give each target distinct paths:
 
 ```powershell
-dotnet test test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -c Release -f net8.0 --no-build --report-trx --results-directory artifacts/test-results/unit/net8.0 --coverage --coverage-output-format cobertura --coverage-output "$PWD/artifacts/coverage/unit/net8.0.cobertura.xml"
+dotnet test --project test/Serilog.Sinks.OpenSearch.Tests/Serilog.Sinks.Opensearch.Tests.csproj -c Release -f net8.0 --no-build --report-trx --results-directory artifacts/test-results/unit/net8.0 --coverage --coverage-output-format cobertura --coverage-output "$PWD/artifacts/coverage/unit/net8.0.cobertura.xml"
 ```
 
-CI executes the same unit project once per target and uploads its TRX and Cobertura files. The integration-test project is intentionally excluded from this migration and requires separate, integration-specific processing later.
+CI executes the same unit project once per target and uploads its TRX and Cobertura files.
+
+The TUnit integration project uses Testcontainers to run the sink against OpenSearch 1.3.20 and 2.19.6. Its six scenarios cover explicit and detected template versions, indexing and final flush behavior, minimum-level filtering, and indexed `TraceId`/`SpanId` behavior. Docker must be running with Linux-container support:
+
+```powershell
+dotnet restore test/Serilog.Sinks.OpenSearch.IntegrationTests/Serilog.Sinks.OpenSearch.IntegrationTests.csproj
+dotnet build test/Serilog.Sinks.OpenSearch.IntegrationTests/Serilog.Sinks.OpenSearch.IntegrationTests.csproj -c Release --no-restore
+dotnet test --project test/Serilog.Sinks.OpenSearch.IntegrationTests/Serilog.Sinks.OpenSearch.IntegrationTests.csproj -c Release --no-build
+```
+
+The first integration run may take several minutes while Docker downloads the OpenSearch images. See the [integration-test README](test/Serilog.Sinks.OpenSearch.IntegrationTests/README.md) for the current matrix and direct executable command.
 
 ## More information
 
@@ -287,6 +304,7 @@ In your `appsettings.json` file, under the `Serilog` node, :
           "batchAction": "Create",
           "period": 2,
           "inlineFields": true,
+          "retryTimeLimit": "00:10:00",
           "renderTraceId": true,
           "renderSpanId": true,
           "restrictedToMinimumLevel": "Warning",
@@ -418,3 +436,19 @@ Thankfully this is easy to do once you've added the following nuget package `Ope
 #### Version 1.2
 
 * Updated dependencies
+
+#### Version 2.0
+
+* Updated the sink to OpenSearch.Net 2.0 and Serilog 4.4 while retaining .NET Standard 2.0 compatibility.
+* Replaced `Serilog.Sinks.PeriodicBatching` with Serilog's native batching for non-durable delivery.
+* Added `RetryTimeLimit` and standard temporary, permanent, and final failure reporting through Serilog failure listeners and fallback chains.
+* Preserved the existing durable file-buffering lifecycle and direct `OpenSearchSink` construction surface.
+* Migrated unit and integration tests from xUnit to TUnit with Microsoft Testing Platform.
+* Rebuilt live integration coverage around Testcontainers for OpenSearch 1.x and 2.x.
+
+#### Serilog.Formatting.OpenSearch 3.1
+
+* Added default-on root `TraceId` and `SpanId` fields using Serilog's first-class captured identifiers.
+* Added independent `RenderTraceId` and `RenderSpanId` opt-outs.
+* Added case-insensitive collision handling in which first-class identifiers take precedence without changing message rendering.
+* Preserved complete output ownership for custom, durable-custom, and compact formatters.
