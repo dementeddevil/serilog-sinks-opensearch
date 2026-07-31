@@ -145,6 +145,11 @@ namespace Serilog.Sinks.OpenSearch
         /// </summary>
         public TimeSpan Period { get; set; }
 
+        /// <summary>
+        /// The maximum time native Serilog batching retries a failed batch. Null uses Serilog's default.
+        /// </summary>
+        public TimeSpan? RetryTimeLimit { get; set; }
+
         ///<summary>
         /// Supplies culture-specific formatting information, or null.
         /// </summary>
@@ -258,8 +263,8 @@ namespace Serilog.Sinks.OpenSearch
             get { return _queueSizeLimit; }
             set
             {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(QueueSizeLimit), "Queue size limit must be non-zero.");
+                if (value == 0 || value < -1)
+                    throw new ArgumentOutOfRangeException(nameof(QueueSizeLimit), "Queue size limit must be -1 or greater than zero.");
                 _queueSizeLimit = value;
             }
         }

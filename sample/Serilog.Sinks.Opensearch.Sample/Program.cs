@@ -40,6 +40,7 @@ namespace Serilog.Sinks.OpenSearch.Sample
                         AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.OSv1,
                         NumberOfReplicas = 1,
                         NumberOfShards = 2,
+                        RetryTimeLimit = TimeSpan.FromMinutes(2),
                         //BufferBaseFilename = "./buffer",
                        // RegisterTemplateFailure = RegisterTemplateRecovery.FailSink,
                         FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),

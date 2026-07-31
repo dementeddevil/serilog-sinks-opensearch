@@ -315,6 +315,22 @@ See the XML `<appSettings>` example above for a discussion of available `Args` o
 ### Handling errors
 
 You have the option to specify how to handle issues with OpenSearch. Since the sink delivers in a batch, it might be possible that one or more events could actually not be stored in the OpenSearch store.
+
+### Native batching, retry, and failure handling
+
+Non-durable sinks use Serilog 4's native batching. `BatchPostingLimit`, `Period`, and `QueueSizeLimit` retain their existing meanings; `QueueSizeLimit = -1` selects an unbounded queue. Set `RetryTimeLimit` to bound retries, use `TimeSpan.Zero` to exhaust on the first failed attempt, or leave it null for Serilog's ten-minute default. Serilog 4.4 silently drops queue-overflow events and cannot notify a failure listener for them.
+
+Transport exceptions and unsuccessful whole-batch responses now propagate to Serilog so its retry scheduler, `ILoggingFailureListener`, and fallback chains can report temporary, permanent, and final failures consistently. `EmitEventFailure`, `FailureSink`, and `FailureCallback` apply only to individual rejected items in an otherwise valid bulk response; they do not intercept retryable whole-batch failures.
+
+Disposing a logger or a directly-constructed `OpenSearchSink` flushes through Serilog's native batching lifecycle. Direct construction remains supported:
+
+```csharp
+using var sink = new OpenSearchSink(options);
+ILogEventSink eventSink = sink;
+eventSink.Emit(logEvent);
+```
+
+Durable file buffering retains its existing independent shipping and retry behavior; `RetryTimeLimit` does not apply to durable mode.
 Can be a mapping issue for example. It is hard to find out what happened here. There is an option called *EmitEventFailure* which is an enum (flagged) with the following options:
 
 * WriteToSelfLog, the default option in which the errors are written to the SelfLog.

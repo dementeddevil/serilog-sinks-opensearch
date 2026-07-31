@@ -17,7 +17,7 @@ using System;
 namespace Serilog.Sinks.OpenSearch.Durable
 {
     /// <summary>
-    /// Based on the BatchedConnectionStatus class from <see cref="Serilog.Sinks.PeriodicBatching.PeriodicBatchingSink"/>.
+    /// Based on the historical BatchedConnectionStatus implementation used by Serilog sinks.
     /// https://github.com/serilog/serilog-sinks-seq/blob/v4.0.0/src/Serilog.Sinks.Seq/Sinks/Seq/ExponentialBackoffConnectionSchedule.cs
     /// </summary>
     public class ExponentialBackoffConnectionSchedule

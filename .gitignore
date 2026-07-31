@@ -25,6 +25,7 @@ bld/
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
+/test/coverage/
 
 #NUNIT
 *.VisualState.xml

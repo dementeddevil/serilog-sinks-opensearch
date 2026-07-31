@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.5.33312.197
+# Visual Studio Version 18
+VisualStudioVersion = 18.9.12023.133 insiders
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{148431F6-5BA9-4987-80CF-DF9F23F54947}"
 	ProjectSection(SolutionItems) = preProject
@@ -21,6 +21,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Sinks.OpenSearch.Sample", "sample\Serilog.Sinks.OpenSearch.Sample\Serilog.Sinks.OpenSearch.Sample.csproj", "{253B37AB-D82E-4A5F-BA16-F1BE398818C8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Formatting.OpenSearch", "src\Serilog.Formatting.OpenSearch\Serilog.Formatting.OpenSearch.csproj", "{0E6D34BF-322A-4803-94D1-355F6D5024BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serilog.Sinks.OpenSearch.IntegrationTests", "test\Serilog.Sinks.OpenSearch.IntegrationTests\Serilog.Sinks.OpenSearch.IntegrationTests.csproj", "{C16E0AD9-C807-B359-2E67-9DEA8404E974}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{0E6D34BF-322A-4803-94D1-355F6D5024BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E6D34BF-322A-4803-94D1-355F6D5024BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E6D34BF-322A-4803-94D1-355F6D5024BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C16E0AD9-C807-B359-2E67-9DEA8404E974}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C16E0AD9-C807-B359-2E67-9DEA8404E974}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C16E0AD9-C807-B359-2E67-9DEA8404E974}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C16E0AD9-C807-B359-2E67-9DEA8404E974}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

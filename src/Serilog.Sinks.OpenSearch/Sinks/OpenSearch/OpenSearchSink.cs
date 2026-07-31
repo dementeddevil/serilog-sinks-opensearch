@@ -19,31 +19,45 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using OpenSearch.Net;
+using Serilog.Configuration;
+using Serilog.Core;
 using Serilog.Debugging;
 using Serilog.Events;
-using Serilog.Sinks.PeriodicBatching;
 
 namespace Serilog.Sinks.OpenSearch
 {
-    public sealed class OpenSearchSink : PeriodicBatchingSink
+    public sealed class OpenSearchSink : ILogEventSink, IDisposable, ISetLoggingFailureListener
     {
+        private readonly ILogEventSink _sink;
+
         public OpenSearchSink(OpenSearchSinkOptions options)
-            : this(
-                  new BatchedOpenSearchSink(options),
-                  new PeriodicBatchingSinkOptions
-                    {
-                        BatchSizeLimit = options.BatchPostingLimit,
-                        Period = options.Period,
-                        EagerlyEmitFirstEvent = true,
-                        QueueLimit = (options.QueueSizeLimit == -1) ? null : new int?(options.QueueSizeLimit)
-                    }
-                  )
         {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            _sink = LoggerSinkConfiguration.CreateSink(writeTo =>
+                writeTo.Sink(new BatchedOpenSearchSink(options), CreateBatchingOptions(options)));
         }
 
-        private OpenSearchSink(IBatchedLogEventSink batchedSink, PeriodicBatchingSinkOptions options)
-            : base(batchedSink, options)
+        public void Emit(LogEvent logEvent) => _sink.Emit(logEvent);
+
+        public void Dispose() => (_sink as IDisposable)?.Dispose();
+
+        public void SetFailureListener(ILoggingFailureListener failureListener)
+            => ((ISetLoggingFailureListener)_sink).SetFailureListener(failureListener);
+
+        internal static BatchingOptions CreateBatchingOptions(OpenSearchSinkOptions options)
         {
+            var batchingOptions = new BatchingOptions
+            {
+                BatchSizeLimit = options.BatchPostingLimit,
+                BufferingTimeLimit = options.Period,
+                EagerlyEmitFirstEvent = true,
+                QueueLimit = options.QueueSizeLimit == -1 ? null : new int?(options.QueueSizeLimit)
+            };
+
+            if (options.RetryTimeLimit.HasValue)
+                batchingOptions.RetryTimeLimit = options.RetryTimeLimit.Value;
+
+            return batchingOptions;
         }
     }
 
@@ -64,24 +78,9 @@ namespace Serilog.Sinks.OpenSearch
         /// Emit a batch of log events, running to completion synchronously.
         /// </summary>
         /// <param name="events">The events to emit.</param>
-        /// <remarks>
-        /// Override either <see cref="M:Serilog.Sinks.PeriodicBatching.PeriodicBatchingSink.EmitBatch(System.Collections.Generic.IEnumerable{Serilog.Events.LogEvent})" />
-        ///  or <see cref="M:Serilog.Sinks.PeriodicBatching.PeriodicBatchingSink.EmitBatchAsync(System.Collections.Generic.IEnumerable{Serilog.Events.LogEvent})" />,
-        /// not both.
-        /// </remarks>
-        public async Task EmitBatchAsync(IEnumerable<LogEvent> events)
+        public async Task EmitBatchAsync(IReadOnlyCollection<LogEvent> events)
         {
-            DynamicResponse result;
-
-            try
-            {
-                result = await this.EmitBatchCheckedAsync<DynamicResponse>(events);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, events);
-                return;
-            }
+            var result = await this.EmitBatchCheckedAsync<DynamicResponse>(events).ConfigureAwait(false);
 
             HandleResponse(events, result);
         }
@@ -104,58 +103,6 @@ namespace Serilog.Sinks.OpenSearch
 
             var payload = CreatePayload(events);
             return _state.Client.BulkAsync<T>(PostData.MultiJson(payload));
-        }
-
-        /// <summary>
-        /// Handles the exceptions.
-        /// </summary>
-        /// <param name="ex"></param>
-        /// <param name="events"></param>
-        private void HandleException(Exception ex, IEnumerable<LogEvent> events)
-        {
-            if (_state.Options.EmitEventFailure.HasFlag(EmitEventFailureHandling.WriteToSelfLog))
-            {
-                // ES reports an error, output the error to the selflog
-                SelfLog.WriteLine("Caught exception while performing bulk operation to OpenSearch: {0}", ex);
-            }
-            if (_state.Options.EmitEventFailure.HasFlag(EmitEventFailureHandling.WriteToFailureSink) &&
-                _state.Options.FailureSink != null)
-            {
-                // Send to a failure sink
-                try
-                {
-                    foreach (var e in events)
-                    {
-                        _state.Options.FailureSink.Emit(e);
-                    }
-                }
-                catch (Exception exSink)
-                {
-                    // We do not let this fail too
-                    SelfLog.WriteLine("Caught exception while emitting to sink {1}: {0}", exSink,
-                        _state.Options.FailureSink);
-                }
-            }
-            if (_state.Options.EmitEventFailure.HasFlag(EmitEventFailureHandling.RaiseCallback) &&
-                       _state.Options.FailureCallback != null)
-            {
-                // Send to a failure callback
-                try
-                {
-                    foreach (var e in events)
-                    {
-                        _state.Options.FailureCallback(e);
-                    }
-                }
-                catch (Exception exCallback)
-                {
-                    // We do not let this fail too
-                    SelfLog.WriteLine("Caught exception while emitting to callback {1}: {0}", exCallback,
-                        _state.Options.FailureCallback);
-                }
-            }
-            if (_state.Options.EmitEventFailure.HasFlag(EmitEventFailureHandling.ThrowException))
-                throw ex;
         }
 
         private IEnumerable<string> CreatePayload(IEnumerable<LogEvent> events)
@@ -248,9 +195,13 @@ namespace Serilog.Sinks.OpenSearch
                     indexer++;
                 }
             }
-            else if (result.Success == false && result.OriginalException != null)
+            else if (!result.Success)
             {
-                HandleException(result.OriginalException, events);
+                if (result.OriginalException != null)
+                    throw result.OriginalException;
+
+                throw new InvalidOperationException(
+                    $"OpenSearch bulk request failed with HTTP status {result.HttpStatusCode?.ToString() ?? "unknown"}.");
             }
         }
 

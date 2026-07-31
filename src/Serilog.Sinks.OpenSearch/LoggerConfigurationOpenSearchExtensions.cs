@@ -55,12 +55,17 @@ namespace Serilog
         {
             options = options ?? new OpenSearchSinkOptions(new[] { new Uri(DefaultNodeUri) });
 
-            var sink = string.IsNullOrWhiteSpace(options.BufferBaseFilename)
-                ? (ILogEventSink)new OpenSearchSink(options)
-                : new DurableOpenSearchSink(options);
+            if (string.IsNullOrWhiteSpace(options.BufferBaseFilename))
+            {
+                return loggerSinkConfiguration.Sink(
+                    new BatchedOpenSearchSink(options),
+                    OpenSearchSink.CreateBatchingOptions(options),
+                    restrictedToMinimumLevel: options.MinimumLogEventLevel ?? LevelAlias.Minimum,
+                    levelSwitch: options.LevelSwitch);
+            }
 
             return loggerSinkConfiguration.Sink(
-                sink,
+                new DurableOpenSearchSink(options),
                 restrictedToMinimumLevel: options.MinimumLogEventLevel ?? LevelAlias.Minimum,
                 levelSwitch: options.LevelSwitch
             );
@@ -145,6 +150,7 @@ namespace Serilog
         /// <param name="templateCustomSettings">Add custom opensearch settings to the template</param>
         /// <param name="detectOpenSearchVersion">Turns on detection of opensearch version via background HTTP call. This will also set `TypeName` automatically, according to the version of OpenSearch.</param>
         /// <param name="batchAction">Configures the OpType being used when inserting document in batch. Must be set to create for data streams.</param>
+        /// <param name="retryTimeLimit">Maximum time native batching retries failed batches; null uses Serilog's default.</param>
         /// <returns>LoggerConfiguration object</returns>
         /// <exception cref="ArgumentNullException"><paramref name="nodeUris"/> is <see langword="null" />.</exception>
         public static LoggerConfiguration OpenSearch(
@@ -184,7 +190,8 @@ namespace Serilog
             int? bufferFileCountLimit = null,
             Dictionary<string,string> templateCustomSettings = null,
             OpenOpType batchAction = OpenOpType.Index,
-            bool detectOpenSearchVersion = true)
+            bool detectOpenSearchVersion = true,
+            TimeSpan? retryTimeLimit = null)
         {
             if (string.IsNullOrEmpty(nodeUris))
                 throw new ArgumentNullException(nameof(nodeUris), "No OpenSearch node(s) specified.");
@@ -249,6 +256,7 @@ namespace Serilog
             options.ConnectionTimeout = TimeSpan.FromSeconds(connectionTimeout);
             options.EmitEventFailure = emitEventFailure;
             options.QueueSizeLimit = queueSizeLimit;
+            options.RetryTimeLimit = retryTimeLimit;
             options.PipelineName = pipelineName;
 
             options.AutoRegisterTemplate = autoRegisterTemplate;
